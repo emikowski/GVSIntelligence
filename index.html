@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0a131c">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GVS Intelligence">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<script src="assets/chem-data.js"></script>
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#0a131c}
+  ::placeholder{color:#5a6b7b}
+  input,select,button{font-family:inherit}
+  .mc{transition:transform .15s, border-color .15s, background .15s}
+  .mc:hover{transform:translateY(-3px);border-color:rgba(0,159,227,.55)}
+  .navitem{transition:background .12s,color .12s}
+  .navitem:hover{background:rgba(255,255,255,.05)}
+  .gbtn{transition:filter .12s, transform .08s}
+  .gbtn:hover{filter:brightness(1.08)}
+  .gbtn:active{transform:translateY(1px)}
+  .fld{transition:border-color .12s, background .12s;min-width:0}
+  .fld:focus{outline:none;border-color:#009FE3;background:#0c1722}
+  .grad{background:linear-gradient(rgba(0,159,227,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(0,159,227,.045) 1px,transparent 1px);background-size:28px 28px}
+  .rowdel{transition:color .12s,background .12s}
+  .rowdel:hover{color:#fb7185;background:rgba(251,113,133,.1)}
+  .authfld{transition:border-color .12s, background .12s}
+  .authfld:focus{outline:none;border-color:#009FE3;background:#0c1722}
+  @media print{
+    @page{ size:A4; margin:13mm; }
+    .no-print{ display:none !important; }
+    html,body{ background:#fff !important; }
+    .report-wrap{ padding:0 !important; background:#fff !important; }
+    .report-sheet{ box-shadow:none !important; border:0 !important; margin:0 !important; max-width:none !important; }
+  }
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:#0a131c;font-family:'IBM Plex Sans',sans-serif;color:#cdd9e3">
+
+  <!-- ============ AUTH / LOGIN + CADASTRO ============ -->
+  <sc-if value="{{ isAuth }}" hint-placeholder-val="{{ true }}">
+    <div class="grad" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px;background:radial-gradient(1100px 600px at 50% -10%,rgba(0,159,227,.10),transparent 60%),#0a131c">
+      <div style="width:100%;max-width:430px">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="display:inline-flex;align-items:center;justify-content:center;background:#fff;border-radius:16px;padding:15px 22px;margin-bottom:20px;box-shadow:0 16px 44px rgba(0,0,0,.45)">
+            <img src="assets/gvs-logo-oficial.png" alt="GVS" style="height:50px;width:auto;display:block">
+          </div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#009FE3;margin-bottom:10px">Safety Intelligence Platform</div>
+          <h1 style="font-family:'Space Grotesk',sans-serif;margin:0;font-size:25px;font-weight:700;color:#fff;letter-spacing:-.5px">{{ authTitle }}</h1>
+        </div>
+        <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:16px;padding:22px">
+          <div style="display:flex;gap:5px;background:#0c1722;border:1px solid #1f2f3d;border-radius:10px;padding:4px;margin-bottom:18px">
+            <button class="gbtn" onClick="{{ setLogin }}" style="{{ tabLoginStyle }}">Entrar</button>
+            <button class="gbtn" onClick="{{ setSignup }}" style="{{ tabSignupStyle }}">Criar conta</button>
+          </div>
+
+          <sc-if value="{{ showGoogle }}" hint-placeholder-val="{{ false }}">
+            <button class="gbtn" onClick="{{ loginGoogle }}" style="width:100%;border:1px solid #2a3a4a;background:#fff;color:#1c2a36;border-radius:10px;padding:12px;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px">
+              <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.8.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72a5.4 5.4 0 0 1 0-3.44V4.95H.96a9 9 0 0 0 0 8.1l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.58A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+              Continuar com Google
+            </button>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px"><div style="flex:1;height:1px;background:#1f2f3d"></div><span style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b">ou com e-mail</span><div style="flex:1;height:1px;background:#1f2f3d"></div></div>
+          </sc-if>
+
+          <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+            <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Nome completo</label>
+            <input class="authfld" value="{{ authName }}" onInput="{{ onAuthName }}" placeholder="Seu nome" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:12px;font-size:13.5px;color:#fff;background:#0c1722;margin-bottom:13px">
+            <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Empresa</label>
+            <input class="authfld" value="{{ authCompany }}" onInput="{{ onAuthCompany }}" placeholder="Sua empresa" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:12px;font-size:13.5px;color:#fff;background:#0c1722;margin-bottom:13px">
+          </sc-if>
+
+          <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">E-mail</label>
+          <input class="authfld" type="email" value="{{ authEmail }}" onInput="{{ onAuthEmail }}" placeholder="voce@empresa.com" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:12px;font-size:13.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace;margin-bottom:13px">
+          <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Senha</label>
+          <input class="authfld" type="password" value="{{ authPassword }}" onInput="{{ onAuthPassword }}" placeholder="••••••••" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:12px;font-size:13.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace;margin-bottom:16px">
+
+          <sc-if value="{{ isSignup }}" hint-placeholder-val="{{ false }}">
+            <label style="display:flex;gap:9px;align-items:flex-start;cursor:pointer;margin-bottom:16px">
+              <input type="checkbox" checked="{{ authConsent }}" onChange="{{ onAuthConsent }}" style="margin-top:2px;width:16px;height:16px;accent-color:#009FE3;flex:none">
+              <span style="font-size:11.5px;color:#8ea0b0;line-height:1.5">Li e concordo com o tratamento dos meus dados conforme a <strong style="color:#cdd9e3">Política de Privacidade (LGPD)</strong>. Os dados ficam armazenados localmente neste dispositivo.</span>
+            </label>
+          </sc-if>
+
+          <sc-if value="{{ authError }}" hint-placeholder-val="{{ false }}">
+            <div style="background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.35);border-radius:9px;padding:11px 13px;font-size:12.5px;color:#fca5a5;line-height:1.5;margin-bottom:14px">{{ authError }}</div>
+          </sc-if>
+
+          <button class="gbtn" onClick="{{ submitAuth }}" style="width:100%;border:0;padding:14px;border-radius:10px;background:#009FE3;color:#06121b;font-weight:600;font-size:14.5px;cursor:pointer">{{ authCta }}</button>
+        </div>
+        <div style="text-align:center;margin-top:18px">
+          <button class="gbtn" onClick="{{ togglePrivacy }}" style="background:transparent;border:0;color:#5fb4dd;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace;text-decoration:underline">Política de Privacidade &amp; LGPD</button>
+        </div>
+        <sc-if value="{{ showPrivacy }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#0e1a25;border:1px solid #1c2a38;border-radius:12px;padding:18px;margin-top:12px;font-size:12px;color:#8ea0b0;line-height:1.65">
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:#fff;margin-bottom:10px">Política de Privacidade · LGPD</div>
+            <p style="margin:0 0 8px"><strong style="color:#cdd9e3">Dados coletados:</strong> nome, e-mail e empresa (cadastro); histórico de consultas — contaminantes, concorrentes e cálculos de ROI.</p>
+            <p style="margin:0 0 8px"><strong style="color:#cdd9e3">Finalidade:</strong> autenticar o acesso e gerar inteligência de uso e relatórios comerciais.</p>
+            <p style="margin:0 0 8px"><strong style="color:#cdd9e3">Armazenamento:</strong> localmente no seu navegador (localStorage). Neste protótipo nenhum dado trafega para servidores externos.</p>
+            <p style="margin:0 0 8px"><strong style="color:#cdd9e3">Acesso:</strong> os dados de consulta são restritos ao administrador da plataforma.</p>
+            <p style="margin:0"><strong style="color:#cdd9e3">Seus direitos:</strong> acesso, correção e eliminação dos dados (art. 18, LGPD). Base legal: consentimento.</p>
+          </div>
+        </sc-if>
+        <div style="text-align:center;margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3f4f5e;letter-spacing:1px">GVS SAFETY INTELLIGENCE · v2.9 · PROTÓTIPO</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ ENTRY / LANGUAGE ============ -->
+  <sc-if value="{{ isLanguage }}" hint-placeholder-val="{{ true }}">
+    <div class="grad" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px;background:radial-gradient(1100px 600px at 50% -10%,rgba(0,159,227,.10),transparent 60%),#0a131c">
+      <div style="width:100%;max-width:520px;text-align:center">
+        <div style="display:inline-flex;align-items:center;justify-content:center;background:#fff;border-radius:18px;padding:22px 30px;margin-bottom:30px;box-shadow:0 16px 44px rgba(0,0,0,.45)">
+          <img src="assets/gvs-logo-oficial.png" alt="GVS" style="height:72px;width:auto;display:block">
+        </div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#009FE3;margin-bottom:12px">Safety Intelligence Platform</div>
+        <h1 style="font-family:'Space Grotesk',sans-serif;margin:0 0 8px;font-size:30px;font-weight:700;color:#fff;letter-spacing:-.5px">Escolha seu idioma</h1>
+        <p style="margin:0 auto 34px;font-size:15px;color:#8ea0b0;max-width:400px;line-height:1.55">Selecione o idioma operacional para iniciar a plataforma de inteligência em proteção respiratória.</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+          <button class="gbtn" onClick="{{ setPt }}" style="border:1px solid #009FE3;padding:17px;border-radius:12px;background:#009FE3;color:#06121b;font-weight:600;font-size:15px;cursor:pointer">Português</button>
+          <button class="gbtn" onClick="{{ setEn }}" style="border:1px solid #233544;padding:17px;border-radius:12px;background:#13212e;color:#cdd9e3;font-weight:600;font-size:15px;cursor:pointer">English</button>
+          <button class="gbtn" onClick="{{ setEs }}" style="border:1px solid #233544;padding:17px;border-radius:12px;background:#13212e;color:#cdd9e3;font-weight:600;font-size:15px;cursor:pointer">Español</button>
+        </div>
+        <div style="margin-top:14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:#3f4f5e">EN / ES em breve — protótipo em Português</div>
+        <div style="margin-top:34px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#3f4f5e;letter-spacing:1px">GVS · PANTONE PROCESS CYAN #009FE3 · v2.9</div>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ APP SHELL ============ -->
+  <sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+    <div style="{{ shellGrid }}">
+
+      <!-- SIDEBAR -->
+      <aside style="{{ asideStyle }}">
+        <div style="{{ logoBoxStyle }}">
+          <img src="assets/gvs-logo-oficial.png" alt="GVS" style="height:30px;width:auto;display:block">
+        </div>
+        <div style="{{ modulesLabelStyle }}">Módulos</div>
+        <nav style="{{ navWrapStyle }}">
+          <div class="navitem" onClick="{{ goHome }}" style="{{ navHome }}">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+            <span>Home</span>
+          </div>
+          <div class="navitem" onClick="{{ goSafe }}" style="{{ navSafe }}">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/></svg>
+            <span>SafeSelect</span>
+          </div>
+          <div class="navitem" onClick="{{ goEquiv }}" style="{{ navEquiv }}">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 8 18 8 14 4"/><polyline points="20 16 6 16 10 20"/></svg>
+            <span>Equivalência</span>
+          </div>
+          <div class="navitem" onClick="{{ goRoi }}" style="{{ navRoi }}">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="20"/><rect x="5" y="12" width="3" height="6"/><rect x="10.5" y="8" width="3" height="10"/><rect x="16" y="4" width="3" height="14"/></svg>
+            <span>ROI Calculator</span>
+          </div>
+          <sc-if value="{{ showInsights }}" hint-placeholder-val="{{ false }}">
+            <div class="navitem" onClick="{{ goInsights }}" style="{{ navInsights }}">
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+              <span>Insights</span>
+            </div>
+          </sc-if>
+        </nav>
+
+        <div style="{{ bottomBlockStyle }}">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#5a6b7b;text-transform:uppercase;margin:0 6px 8px">Idioma</div>
+          <div style="display:flex;gap:5px;margin-bottom:16px">
+            <button class="gbtn" style="flex:1;padding:9px 0;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'IBM Plex Mono',monospace;background:#009FE3;border:1px solid #009FE3;color:#06121b">PT</button>
+            <button class="gbtn" style="flex:1;padding:9px 0;border-radius:8px;font-size:12px;font-weight:600;cursor:not-allowed;font-family:'IBM Plex Mono',monospace;background:#13212e;border:1px solid #233544;color:#46586a">EN</button>
+            <button class="gbtn" style="flex:1;padding:9px 0;border-radius:8px;font-size:12px;font-weight:600;cursor:not-allowed;font-family:'IBM Plex Mono',monospace;background:#13212e;border:1px solid #233544;color:#46586a">ES</button>
+          </div>
+          <div style="padding-top:14px;border-top:1px solid #1c2a38;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#46586a;line-height:1.6">GVS SAFETY<br>INTELLIGENCE v2.9</div>
+        </div>
+      </aside>
+
+      <!-- MAIN -->
+      <div class="grad" style="background:radial-gradient(900px 500px at 80% -20%,rgba(0,159,227,.06),transparent 60%),#0c1722;min-height:100vh;min-width:0">
+
+        <!-- topbar -->
+        <header style="display:flex;align-items:center;gap:14px;padding:18px 30px;border-bottom:1px solid #1c2a38;background:rgba(10,19,28,.6);backdrop-filter:blur(6px);position:sticky;top:0;z-index:5">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:#5a6b7b">GVS / <span style="color:#009FE3">{{ crumb }}</span></div>
+          <div style="flex:1"></div>
+          <div style="display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8ea0b0"><span style="width:7px;height:7px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55e"></span>SYSTEM ONLINE</div>
+          <div style="width:1px;height:18px;background:#1c2a38"></div>
+          <div style="display:flex;align-items:center;gap:9px">
+            <div style="width:28px;height:28px;border-radius:50%;background:rgba(0,159,227,.16);border:1px solid rgba(0,159,227,.4);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;color:#009FE3">{{ userInitial }}</div>
+            <span style="font-size:12.5px;color:#cdd9e3;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ userName }}</span>
+            <button class="navitem" onClick="{{ logout }}" title="Sair" style="border:1px solid #1c2a38;background:transparent;color:#8ea0b0;border-radius:8px;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+          </div>
+        </header>
+
+        <main style="{{ mainStyle }}">
+
+          <!-- ===== HOME ===== -->
+          <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:#009FE3;text-transform:uppercase;margin-bottom:6px">// dashboard</div>
+              <h1 style="font-family:'Space Grotesk',sans-serif;margin:0 0 6px;font-size:27px;font-weight:700;color:#fff;letter-spacing:-.5px">GVS Safety Intelligence</h1>
+              <p style="margin:0 0 28px;font-size:14.5px;color:#8ea0b0;max-width:620px;line-height:1.55">Escolha o módulo para sua análise — técnica, comercial ou financeira. Recomendações orientativas alinhadas ao portfólio GVS/RPB.</p>
+
+              <div style="display:grid;grid-template-columns:{{ homeCardsCols }};gap:16px;margin-bottom:30px">
+                <div class="mc" onClick="{{ goSafe }}" style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:22px;cursor:pointer">
+                  <div style="width:48px;height:48px;border-radius:12px;background:rgba(0,159,227,.14);display:flex;align-items:center;justify-content:center;margin-bottom:16px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#009FE3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/></svg></div>
+                  <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;color:#fff;margin-bottom:6px">SafeSelect</div>
+                  <div style="font-size:13px;color:#8ea0b0;line-height:1.5">Consulta de 777 compostos por nome, sinônimo ou CAS. LT NR-15, TLV, IPVS, filtro sugerido e equivalente GVS/RPB.</div>
+                  <div style="margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#009FE3;letter-spacing:1px">ABRIR →</div>
+                </div>
+                <div class="mc" onClick="{{ goEquiv }}" style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:22px;cursor:pointer">
+                  <div style="width:48px;height:48px;border-radius:12px;background:rgba(0,159,227,.14);display:flex;align-items:center;justify-content:center;margin-bottom:16px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#009FE3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 8 18 8 14 4"/><polyline points="20 16 6 16 10 20"/></svg></div>
+                  <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;color:#fff;margin-bottom:6px">Commercial Equivalence</div>
+                  <div style="font-size:13px;color:#8ea0b0;line-height:1.5">Informe o modelo do concorrente e receba o equivalente GVS/RPB.</div>
+                  <div style="margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#009FE3;letter-spacing:1px">ABRIR →</div>
+                </div>
+                <div class="mc" onClick="{{ goRoi }}" style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:22px;cursor:pointer">
+                  <div style="width:48px;height:48px;border-radius:12px;background:rgba(0,159,227,.14);display:flex;align-items:center;justify-content:center;margin-bottom:16px"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#009FE3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="20" x2="20" y2="20"/><rect x="5" y="12" width="3" height="6"/><rect x="10.5" y="8" width="3" height="10"/><rect x="16" y="4" width="3" height="14"/></svg></div>
+                  <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;color:#fff;margin-bottom:6px">ROI Calculator</div>
+                  <div style="font-size:13px;color:#8ea0b0;line-height:1.5">Cadastre itens do concorrente e GVS e veja a economia e o payback.</div>
+                  <div style="margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#009FE3;letter-spacing:1px">ABRIR →</div>
+                </div>
+                <sc-if value="{{ showInsights }}" hint-placeholder-val="{{ false }}">
+                <div class="mc" onClick="{{ goInsights }}" style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:22px;cursor:pointer">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px"><div style="width:48px;height:48px;border-radius:12px;background:rgba(0,159,227,.14);display:flex;align-items:center;justify-content:center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#009FE3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg></div><span style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1px;color:#009FE3;background:rgba(0,159,227,.12);border:1px solid rgba(0,159,227,.3);border-radius:6px;padding:4px 7px;text-transform:uppercase">Admin</span></div>
+                  <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;color:#fff;margin-bottom:6px">Insights de Uso</div>
+                  <div style="font-size:13px;color:#8ea0b0;line-height:1.5">Contaminantes e concorrentes mais consultados, e o histórico de ROIs gerados para clientes.</div>
+                  <div style="margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#009FE3;letter-spacing:1px">ABRIR →</div>
+                </div>
+                </sc-if>
+              </div>
+
+              <div style="display:grid;grid-template-columns:{{ homeStatsCols }};gap:12px">
+                <div style="background:#0e1a25;border:1px solid #1c2a38;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Compostos na base</div><div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff">{{ chemCount }}</div></div>
+                <div style="background:#0e1a25;border:1px solid #1c2a38;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Fontes</div><div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:#fff">NR-15 · ACGIH</div></div>
+                <div style="background:#0e1a25;border:1px solid #1c2a38;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Concorrentes</div><div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff">{{ equivCount }}</div></div>
+                <div style="background:#0e1a25;border:1px solid #1c2a38;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Motor</div><div style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;color:#22c55e">APF / TCO</div></div>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- ===== SAFESELECT ===== -->
+          <sc-if value="{{ isSafe }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:#009FE3;text-transform:uppercase;margin-bottom:6px">// safeselect</div>
+              <h1 style="font-family:'Space Grotesk',sans-serif;margin:0 0 6px;font-size:25px;font-weight:700;color:#fff;letter-spacing:-.4px">Consulta de Gases &amp; Seleção Respiratória</h1>
+              <p style="margin:0 0 22px;font-size:14px;color:#8ea0b0;max-width:680px;line-height:1.55">Pesquise o composto por nome, sinônimo ou CAS, informe a concentração medida e escolha a fonte do limite. O motor calcula o FPMR, o FPA requerido e os equipamentos GVS/RPB adequados — com o filtro sugerido pelo Guia de Seleção (base livre Fundacentro/ACGIH).</p>
+
+              <!-- query panel -->
+              <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:22px;margin-bottom:18px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#009FE3;text-transform:uppercase;margin-bottom:14px">// query</div>
+
+                <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Gás · nome ou CAS</label>
+                <input class="fld" list="chemlist" value="{{ safeQuery }}" onInput="{{ onSafeQuery }}" placeholder="Ex.: Acetona, Amônia, Tolueno, 67-64-1…" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:12px;font-size:13.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace;margin-bottom:14px">
+
+                <label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Fonte regulatória</label>
+                <div style="display:flex;gap:8px;margin-bottom:14px">
+                  <button class="gbtn" onClick="{{ setSrcNr15 }}" style="{{ srcNr15Style }}">NR-15 · LT (legal BR)</button>
+                  <button class="gbtn" onClick="{{ setSrcAcgih }}" style="{{ srcAcgihStyle }}">ACGIH · TLV</button>
+                </div>
+
+                <div style="display:grid;grid-template-columns:{{ safeQueryCols }};gap:14px;margin-bottom:16px">
+                  <div><label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Concentração medida</label><input class="fld" value="{{ safeConc }}" onInput="{{ onSafeConc }}" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:12px;font-size:13.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace"></div>
+                  <div><label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Unidade</label><select class="fld" value="{{ safeUnit }}" onChange="{{ onSafeUnit }}" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:12px;font-size:13.5px;color:#fff;background:#0c1722"><option value="ppm">ppm</option><option value="mg/m³">mg/m³</option></select></div>
+                  <div><label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">O₂ ambiente (%)</label><input class="fld" value="{{ safeO2 }}" onInput="{{ onSafeO2 }}" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:12px;font-size:13.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace"></div>
+                </div>
+                <button class="gbtn" onClick="{{ calcSafe }}" style="width:100%;border:0;padding:14px;border-radius:10px;background:#009FE3;color:#06121b;font-weight:600;font-size:14.5px;cursor:pointer">Consultar e calcular exposição →</button>
+              </div>
+
+              <!-- error -->
+              <sc-if value="{{ safeError }}" hint-placeholder-val="{{ false }}">
+                <div style="background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.35);border-radius:12px;padding:16px 18px;font-size:13px;color:#fca5a5;line-height:1.55">{{ safeError }}</div>
+              </sc-if>
+
+              <!-- result -->
+              <sc-if value="{{ safeShown }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:22px;margin-bottom:16px">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:18px">
+                    <div><h3 style="font-family:'Space Grotesk',sans-serif;margin:0 0 4px;font-size:20px;font-weight:600;color:#fff">{{ safeName }}</h3><div style="font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#8ea0b0">{{ safeSub }}</div></div>
+                    <span style="{{ safeBadgeStyle }}">{{ safeBadge }}</span>
+                  </div>
+
+                  <!-- fallback alert -->
+                  <sc-if value="{{ safeFallback }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.4);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12.5px;color:#fcd34d;line-height:1.5">⚠ {{ safeFallback }}</div>
+                  </sc-if>
+
+                  <!-- formula -->
+                  <div style="background:#0c1722;border:1px solid #1f2f3d;border-radius:11px;padding:14px 16px;margin-bottom:16px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Cálculo do fator de exposição</div>
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;color:#cdd9e3;line-height:1.6">{{ safeFormula }}</div>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:{{ safeBoxCols }};gap:10px;margin-bottom:16px">
+                    <div style="border:1px solid #1f2f3d;border-radius:11px;padding:13px;background:#0c1722"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Medido</div><div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#fff">{{ safeConcStr }}</div></div>
+                    <div style="border:1px solid #1f2f3d;border-radius:11px;padding:13px;background:#0c1722"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">{{ safeLimitLabel }}</div><div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:#fff">{{ safeLimitStr }}</div></div>
+                    <div style="{{ safeApfBoxStyle }}"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;color:inherit">APF requerido</div><div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:700;color:inherit">{{ safeApfStr }}</div></div>
+                    <div style="{{ safeIdlhBoxStyle }}"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;color:inherit">IDLH</div><div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:700;color:inherit">{{ safeIdlhStr }}</div></div>
+                  </div>
+
+                  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#cdd9e3;background:#0c1722;border:1px solid #1f2f3d;border-radius:8px;padding:8px 12px"><span style="color:#5a6b7b">FILTRO</span> &nbsp;{{ safeFilter }}</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#cdd9e3;background:#0c1722;border:1px solid #1f2f3d;border-radius:8px;padding:8px 12px"><span style="color:#5a6b7b">TECNOLOGIA</span> &nbsp;{{ safeTech }}</span>
+                    <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#cdd9e3;background:#0c1722;border:1px solid #1f2f3d;border-radius:8px;padding:8px 12px"><span style="color:#5a6b7b">FONTES</span> &nbsp;{{ safeAllLimits }}</span>
+                  </div>
+
+                  <!-- limites complementares -->
+                  <sc-if value="{{ safeHasExtras }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+                      <sc-if value="{{ safeStel }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#cdd9e3;background:#0c1722;border:1px solid #1f2f3d;border-radius:8px;padding:8px 12px"><span style="color:#5a6b7b">STEL</span> &nbsp;{{ safeStel }}</span>
+                      </sc-if>
+                      <sc-if value="{{ safeTeto }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#cdd9e3;background:#0c1722;border:1px solid #1f2f3d;border-radius:8px;padding:8px 12px"><span style="color:#5a6b7b">TETO · C</span> &nbsp;{{ safeTeto }}</span>
+                      </sc-if>
+                      <sc-if value="{{ safeIrr }}" hint-placeholder-val="{{ false }}">
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#fcd34d;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.32);border-radius:8px;padding:8px 12px"><span style="color:#fbbf24">IRRITANTE</span> &nbsp;{{ safeIrr }}</span>
+                      </sc-if>
+                    </div>
+                  </sc-if>
+
+                  <!-- O2 alert -->
+                  <sc-if value="{{ safeO2Warn }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.45);border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:12.5px;color:#fca5a5;line-height:1.5">⛔ {{ safeO2Warn }}</div>
+                  </sc-if>
+
+                  <!-- equipment table -->
+                  <div style="border:1px solid #1f2f3d;border-radius:11px;overflow:hidden">
+                    <div style="display:grid;grid-template-columns:{{ safeEquipCols }};background:#0c1722;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:500;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px"><span>Tecnologia</span><span>APF</span><span>Produto GVS/RPB</span><span>Status</span></div>
+                    <sc-for list="{{ safeOptions }}" as="opt" hint-placeholder-count="5">
+                      <div style="display:grid;grid-template-columns:{{ safeEquipCols }};padding:12px 14px;font-size:12.5px;color:#cdd9e3;border-top:1px solid #1f2f3d;align-items:center"><span>{{ opt.technology }}</span><span style="font-family:'IBM Plex Mono',monospace">{{ opt.apf }}</span><span>{{ opt.product }}</span><span style="{{ opt.statusStyle }}">{{ opt.statusLabel }}</span></div>
+                    </sc-for>
+                  </div>
+
+                  <div style="margin-top:16px;padding:13px 15px;background:rgba(0,159,227,.06);border:1px solid rgba(0,159,227,.22);border-radius:11px;font-size:12px;color:#9fb3c2;line-height:1.55">{{ safeNote }}</div>
+                </div>
+              </sc-if>
+
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#46586a;line-height:1.6">Base: Guia de Seleção de Respiradores · 777 compostos · LT NR-15 + TLV ACGIH 2019 + PPR Fundacentro v4 (uso livre). FPMR = concentração ÷ LT/TLV; selecionar FPA &gt; FPMR. Resultado orientativo — validar com FISPQ/SDS, fit test e legislação local.</div>
+            </div>
+          </sc-if>
+
+          <!-- ===== EQUIVALENCE ===== -->
+          <sc-if value="{{ isEquiv }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:#009FE3;text-transform:uppercase;margin-bottom:6px">// equivalence</div>
+              <h1 style="font-family:'Space Grotesk',sans-serif;margin:0 0 6px;font-size:25px;font-weight:700;color:#fff;letter-spacing:-.4px">Equivalência Comercial</h1>
+              <p style="margin:0 0 22px;font-size:14px;color:#8ea0b0;max-width:680px;line-height:1.55">Informe o concorrente e o modelo/código do produto atual. O motor retorna o equivalente GVS/RPB e o ângulo comercial.</p>
+
+              <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:22px;margin-bottom:18px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#009FE3;text-transform:uppercase;margin-bottom:14px">// competitor input</div>
+                <div style="display:grid;grid-template-columns:{{ equivInputCols }};gap:14px">
+                  <div><label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Concorrente</label><select class="fld" value="{{ equivCompetitor }}" onChange="{{ onEquivCompetitor }}" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:12px;font-size:13.5px;color:#fff;background:#0c1722"><option value="">Todos</option><sc-for list="{{ competitorList }}" as="c" hint-placeholder-count="6"><option value="{{ c }}">{{ c }}</option></sc-for></select></div>
+                  <div><label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Modelo / código do produto</label><input class="fld" list="prodlist" value="{{ equivProduct }}" onInput="{{ onEquivProduct }}" placeholder="Ex.: Adflo, Versaflo TR-300, 6800, X-plore 5500…" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:12px;font-size:13.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace"></div>
+                </div>
+                <button class="gbtn" onClick="{{ calcEquiv }}" style="width:100%;margin-top:16px;border:0;padding:14px;border-radius:10px;background:#009FE3;color:#06121b;font-weight:600;font-size:14.5px;cursor:pointer">Buscar equivalente GVS →</button>
+              </div>
+
+              <sc-if value="{{ equivError }}" hint-placeholder-val="{{ false }}">
+                <div style="background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.35);border-radius:12px;padding:16px 18px;font-size:13px;color:#fca5a5;line-height:1.55">{{ equivError }}</div>
+              </sc-if>
+
+              <sc-if value="{{ equivShown }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:22px;margin-bottom:16px">
+                  <div style="display:grid;grid-template-columns:{{ equivTopCols }};align-items:center;gap:16px;margin-bottom:20px">
+                    <div style="background:#0c1722;border:1px solid #1f2f3d;border-radius:12px;padding:16px">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Produto do concorrente</div>
+                      <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;color:#fff;margin-bottom:3px">{{ eqCompName }}</div>
+                      <div style="font-size:12px;color:#8ea0b0">{{ eqCategory }}</div>
+                    </div>
+                    <div style="width:42px;height:42px;border-radius:50%;background:rgba(0,159,227,.16);border:1px solid rgba(0,159,227,.4);display:flex;align-items:center;justify-content:center;color:#009FE3"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg></div>
+                    <div style="background:rgba(0,159,227,.07);border:1px solid rgba(0,159,227,.35);border-radius:12px;padding:16px">
+                      <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#009FE3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Equivalente GVS/RPB</div>
+                      <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;color:#fff;margin-bottom:3px">{{ eqGvsEquiv }}</div>
+                      <div style="font-size:12px;color:#9fb3c2">{{ eqGvsTech }}</div>
+                    </div>
+                  </div>
+
+                  <div style="display:grid;grid-template-columns:{{ equivInfoCols }};gap:10px;margin-bottom:18px">
+                    <div style="border:1px solid #1f2f3d;border-radius:11px;padding:13px;background:#0c1722"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Família</div><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:#fff">{{ eqFamily }}</div></div>
+                    <div style="border:1px solid #1f2f3d;border-radius:11px;padding:13px;background:#0c1722"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Filtro / cartucho</div><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:#fff">{{ eqFilter }}</div></div>
+                    <div style="border:1px solid #1f2f3d;border-radius:11px;padding:13px;background:#0c1722"><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px">Prioridade</div><div style="font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;color:#009FE3">{{ eqPriority }}</div></div>
+                  </div>
+
+                  <div style="padding:16px 18px;background:rgba(0,159,227,.06);border:1px solid rgba(0,159,227,.22);border-radius:12px;margin-bottom:12px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#009FE3;text-transform:uppercase;margin-bottom:8px">// ângulo comercial</div>
+                    <p style="margin:0;font-size:13.5px;color:#cdd9e3;line-height:1.6">{{ eqAngle }}</p>
+                  </div>
+                  <div style="font-size:12px;color:#8ea0b0;line-height:1.55"><strong style="color:#cdd9e3">Nota técnica:</strong> {{ eqNotes }}</div>
+                </div>
+
+                <sc-if value="{{ eqHasMore }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:#0e1a25;border:1px solid #1c2a38;border-radius:12px;padding:16px 18px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Outras correspondências</div>
+                    <sc-for list="{{ eqOthers }}" as="o" hint-placeholder-count="2">
+                      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid #16242f;font-size:12.5px"><span style="color:#8ea0b0">{{ o.comp }}</span><span style="color:#cdd9e3">{{ o.gvs }}</span></div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </sc-if>
+
+              <div style="margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#46586a;line-height:1.6">Base de equivalência de exemplo (3M, Honeywell, MSA, Dräger, Bullard, Clemco, RPB). Validar configuração final, APF/FPA e homologação local.</div>
+            </div>
+          </sc-if>
+
+          <!-- ===== ROI ===== -->
+          <sc-if value="{{ isRoi }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:#009FE3;text-transform:uppercase;margin-bottom:6px">// roi calculator</div>
+              <h1 style="font-family:'Space Grotesk',sans-serif;margin:0 0 6px;font-size:25px;font-weight:700;color:#fff;letter-spacing:-.4px">ROI · Custo Total de Propriedade</h1>
+              <p style="margin:0 0 22px;font-size:14px;color:#8ea0b0;max-width:680px;line-height:1.55">Cadastre os itens do concorrente e os equivalentes GVS/RPB com preço, quantidade e vida útil. O motor calcula economia por dia, mês e ano, além do payback.</p>
+
+              <!-- assumptions -->
+              <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:20px;margin-bottom:16px">
+                <div style="display:grid;grid-template-columns:{{ roiAssumpCols }};gap:14px">
+                  <div><label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Cliente</label><input class="fld" value="{{ roiClient }}" onInput="{{ onRoiClient }}" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:11px;font-size:13px;color:#fff;background:#0c1722"></div>
+                  <div><label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Projeto</label><input class="fld" value="{{ roiProject }}" onInput="{{ onRoiProject }}" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:11px;font-size:13px;color:#fff;background:#0c1722"></div>
+                  <div><label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Usuários</label><input class="fld" value="{{ roiUsers }}" onInput="{{ onRoiUsers }}" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:11px;font-size:13px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace"></div>
+                  <div><label style="display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#8ea0b0;text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px">Dias/ano</label><input class="fld" value="{{ roiDays }}" onInput="{{ onRoiDays }}" style="width:100%;border:1px solid #2a3a4a;border-radius:9px;padding:11px;font-size:13px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace"></div>
+                </div>
+              </div>
+
+              <!-- two columns of items -->
+              <div style="display:grid;grid-template-columns:{{ roiSidesCols }};gap:16px;margin-bottom:16px">
+
+                <!-- competitor -->
+                <div style="background:#13212e;border:1px solid #2a3a4a;border-radius:14px;padding:18px;min-width:0">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:#808B94;text-transform:uppercase">Concorrente</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8ea0b0">TCO 3a: <span style="color:#fff;font-weight:600">{{ compTotalStr }}</span></div></div>
+                  <div style="display:grid;grid-template-columns:{{ roiRowGrid }};gap:6px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;padding:0 2px"><span>Item</span><span>Qtd</span><span>Preço</span><span>Vida</span><span>Un.</span><span></span></div>
+                  <sc-for list="{{ compRows }}" as="row" hint-placeholder-count="5">
+                    <div style="display:grid;grid-template-columns:{{ roiRowGrid }};gap:6px;margin-bottom:6px;align-items:center">
+                      <input class="fld" value="{{ row.item }}" onInput="{{ row.onItem }}" style="border:1px solid #2a3a4a;border-radius:7px;padding:8px;font-size:11.5px;color:#fff;background:#0c1722">
+                      <input class="fld" value="{{ row.qty }}" onInput="{{ row.onQty }}" style="border:1px solid #2a3a4a;border-radius:7px;padding:8px;font-size:11.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace">
+                      <input class="fld" value="{{ row.unitPrice }}" onInput="{{ row.onPrice }}" style="border:1px solid #2a3a4a;border-radius:7px;padding:8px;font-size:11.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace">
+                      <input class="fld" value="{{ row.lifeValue }}" onInput="{{ row.onLife }}" style="border:1px solid #2a3a4a;border-radius:7px;padding:8px;font-size:11.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace">
+                      <select class="fld" value="{{ row.lifeUnit }}" onChange="{{ row.onUnit }}" style="border:1px solid #2a3a4a;border-radius:7px;padding:8px;font-size:11px;color:#fff;background:#0c1722"><option value="days">dias</option><option value="months">meses</option></select>
+                      <div class="rowdel" onClick="{{ row.onRemove }}" style="cursor:pointer;color:#5a6b7b;border-radius:6px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:16px">×</div>
+                    </div>
+                  </sc-for>
+                  <button class="gbtn" onClick="{{ addComp }}" style="margin-top:6px;border:1px dashed #2a3a4a;background:transparent;color:#8ea0b0;border-radius:8px;padding:9px;width:100%;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace">+ adicionar item</button>
+                </div>
+
+                <!-- gvs -->
+                <div style="background:#13212e;border:1px solid rgba(0,159,227,.35);border-radius:14px;padding:18px;min-width:0">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;color:#009FE3;text-transform:uppercase">GVS / RPB</div><div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8ea0b0">TCO 3a: <span style="color:#fff;font-weight:600">{{ gvsTotalStr }}</span></div></div>
+                  <div style="display:grid;grid-template-columns:{{ roiRowGrid }};gap:6px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;padding:0 2px"><span>Item</span><span>Qtd</span><span>Preço</span><span>Vida</span><span>Un.</span><span></span></div>
+                  <sc-for list="{{ gvsRows }}" as="row" hint-placeholder-count="5">
+                    <div style="display:grid;grid-template-columns:{{ roiRowGrid }};gap:6px;margin-bottom:6px;align-items:center">
+                      <input class="fld" value="{{ row.item }}" onInput="{{ row.onItem }}" style="border:1px solid #2a3a4a;border-radius:7px;padding:8px;font-size:11.5px;color:#fff;background:#0c1722">
+                      <input class="fld" value="{{ row.qty }}" onInput="{{ row.onQty }}" style="border:1px solid #2a3a4a;border-radius:7px;padding:8px;font-size:11.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace">
+                      <input class="fld" value="{{ row.unitPrice }}" onInput="{{ row.onPrice }}" style="border:1px solid #2a3a4a;border-radius:7px;padding:8px;font-size:11.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace">
+                      <input class="fld" value="{{ row.lifeValue }}" onInput="{{ row.onLife }}" style="border:1px solid #2a3a4a;border-radius:7px;padding:8px;font-size:11.5px;color:#fff;background:#0c1722;font-family:'IBM Plex Mono',monospace">
+                      <select class="fld" value="{{ row.lifeUnit }}" onChange="{{ row.onUnit }}" style="border:1px solid #2a3a4a;border-radius:7px;padding:8px;font-size:11px;color:#fff;background:#0c1722"><option value="days">dias</option><option value="months">meses</option></select>
+                      <div class="rowdel" onClick="{{ row.onRemove }}" style="cursor:pointer;color:#5a6b7b;border-radius:6px;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:16px">×</div>
+                    </div>
+                  </sc-for>
+                  <button class="gbtn" onClick="{{ addGvs }}" style="margin-top:6px;border:1px dashed rgba(0,159,227,.4);background:transparent;color:#009FE3;border-radius:8px;padding:9px;width:100%;font-size:12px;cursor:pointer;font-family:'IBM Plex Mono',monospace">+ adicionar item</button>
+                </div>
+              </div>
+
+              <button class="gbtn" onClick="{{ calcRoi }}" style="width:100%;border:0;padding:14px;border-radius:10px;background:#009FE3;color:#06121b;font-weight:600;font-size:14.5px;cursor:pointer;margin-bottom:16px">Calcular ROI →</button>
+
+              <!-- results -->
+              <sc-if value="{{ roiShown }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:22px">
+                  <div style="display:grid;grid-template-columns:{{ roiResCols }};gap:12px;margin-bottom:18px">
+                    <div style="border:1px solid #1f2f3d;border-radius:12px;padding:16px;background:#0c1722"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">TCO Concorrente (3a)</div><div style="font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;color:#fff">{{ compTotalStr }}</div></div>
+                    <div style="border:1px solid rgba(0,159,227,.35);border-radius:12px;padding:16px;background:rgba(0,159,227,.06)"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#009FE3;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">TCO GVS/RPB (3a)</div><div style="font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;color:#fff">{{ gvsTotalStr }}</div></div>
+                    <div style="{{ savingsBoxStyle }}"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;color:inherit">Economia 3 anos</div><div style="font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;color:inherit">{{ savings3yStr }}</div></div>
+                  </div>
+
+                  <!-- bars -->
+                  <div style="background:#0c1722;border:1px solid #1f2f3d;border-radius:12px;padding:18px;margin-bottom:16px">
+                    <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">Custo total de propriedade · 3 anos</div>
+                    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px"><span style="width:90px;font-size:12px;color:#8ea0b0">Concorrente</span><div style="flex:1;height:22px;background:#16242f;border-radius:6px;overflow:hidden"><div style="width:{{ compBarW }};height:100%;background:linear-gradient(90deg,#5a6b7b,#808B94);display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#0c1722;font-weight:600">{{ compTotalStr }}</div></div></div>
+                    <div style="display:flex;align-items:center;gap:12px"><span style="width:90px;font-size:12px;color:#009FE3;font-weight:600">GVS/RPB</span><div style="flex:1;height:22px;background:#16242f;border-radius:6px;overflow:hidden"><div style="width:{{ gvsBarW }};height:100%;background:linear-gradient(90deg,#0066b3,#009FE3);display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#06121b;font-weight:600">{{ gvsTotalStr }}</div></div></div>
+                  </div>
+
+                  <!-- savings breakdown -->
+                  <div style="display:grid;grid-template-columns:{{ roiSaveCols }};gap:12px">
+                    <div style="text-align:center;padding:14px;border:1px solid #1f2f3d;border-radius:11px"><div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#22c55e">{{ savingsYearStr }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-top:5px">Economia / ano</div></div>
+                    <div style="text-align:center;padding:14px;border:1px solid #1f2f3d;border-radius:11px"><div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#22c55e">{{ savingsMonthStr }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-top:5px">Economia / mês</div></div>
+                    <div style="text-align:center;padding:14px;border:1px solid #1f2f3d;border-radius:11px"><div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#22c55e">{{ savingsDayStr }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-top:5px">Economia / dia</div></div>
+                    <div style="text-align:center;padding:14px;border:1px solid rgba(0,159,227,.35);border-radius:11px;background:rgba(0,159,227,.06)"><div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#009FE3">{{ paybackStr }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px;margin-top:5px">Payback</div></div>
+                  </div>
+
+                  <div style="margin-top:16px;font-size:12.5px;color:#9fb3c2;line-height:1.6">{{ roiVerdict }}</div>
+
+                  <div style="display:grid;grid-template-columns:{{ roiCtaCols }};gap:10px;margin-top:18px">
+                    <button class="gbtn" onClick="{{ saveRoi }}" style="border:1px solid #2a3a4a;background:#0c1722;color:#cdd9e3;border-radius:10px;padding:13px;font-size:13.5px;font-weight:600;cursor:pointer">Salvar no log</button>
+                    <button class="gbtn" onClick="{{ generateReport }}" style="border:0;background:#009FE3;color:#06121b;border-radius:10px;padding:13px;font-size:13.5px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Salvar e gerar relatório PDF</button>
+                  </div>
+                </div>
+              </sc-if>
+
+              <div style="margin-top:16px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:#46586a;line-height:1.6">Cálculo orientativo de TCO. Vida útil convertida automaticamente em trocas/ano. Validar preços reais, consumo de filtros e política de manutenção.</div>
+            </div>
+          </sc-if>
+
+          <!-- ===== INSIGHTS ===== -->
+          <sc-if value="{{ isInsights }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:2px;color:#009FE3;text-transform:uppercase;margin-bottom:6px">// insights · acesso restrito ao admin</div>
+              <h1 style="font-family:'Space Grotesk',sans-serif;margin:0 0 6px;font-size:25px;font-weight:700;color:#fff;letter-spacing:-.4px">Inteligência de Uso</h1>
+              <p style="margin:0 0 24px;font-size:14px;color:#8ea0b0;max-width:680px;line-height:1.55">Histórico das consultas realizadas na plataforma — contaminantes e produtos concorrentes mais pesquisados, e o registro dos cálculos de ROI gerados para clientes.</p>
+
+              <div style="display:grid;grid-template-columns:{{ insStatCols }};gap:12px;margin-bottom:22px">
+                <div style="background:#0e1a25;border:1px solid #1c2a38;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Consultas totais</div><div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff">{{ insTotal }}</div></div>
+                <div style="background:#0e1a25;border:1px solid #1c2a38;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Gases distintos</div><div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff">{{ insChemDistinct }}</div></div>
+                <div style="background:#0e1a25;border:1px solid #1c2a38;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Concorrentes</div><div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#fff">{{ insEquivDistinct }}</div></div>
+                <div style="background:#0e1a25;border:1px solid #1c2a38;border-radius:12px;padding:16px"><div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">ROIs salvos</div><div style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#009FE3">{{ insRoiCount }}</div></div>
+              </div>
+
+              <div style="display:grid;grid-template-columns:{{ insColsTwo }};gap:16px;margin-bottom:22px">
+                <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:20px;min-width:0">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#009FE3;text-transform:uppercase;margin-bottom:16px">// contaminantes mais consultados</div>
+                  <sc-if value="{{ hasChemLog }}" hint-placeholder-val="{{ true }}">
+                    <sc-for list="{{ chemTop }}" as="c" hint-placeholder-count="6">
+                      <div style="display:flex;align-items:center;gap:11px;margin-bottom:11px">
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#46586a;width:18px;flex:none">{{ c.rank }}</span>
+                        <div style="flex:1;min-width:0">
+                          <div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:5px"><span style="font-size:12.5px;color:#cdd9e3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8ea0b0;flex:none">{{ c.count }}×</span></div>
+                          <div style="height:6px;background:#16242f;border-radius:4px;overflow:hidden"><div style="width:{{ c.barW }};height:100%;background:linear-gradient(90deg,#0066b3,#009FE3)"></div></div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </sc-if>
+                  <sc-if value="{{ noChemLog }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:12.5px;color:#5a6b7b;line-height:1.6;padding:8px 0">Nenhuma consulta ainda. Use o SafeSelect para começar a registrar contaminantes.</div>
+                  </sc-if>
+                </div>
+                <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:20px;min-width:0">
+                  <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#009FE3;text-transform:uppercase;margin-bottom:16px">// concorrentes mais consultados</div>
+                  <sc-if value="{{ hasEquivLog }}" hint-placeholder-val="{{ true }}">
+                    <sc-for list="{{ equivTop }}" as="c" hint-placeholder-count="6">
+                      <div style="display:flex;align-items:center;gap:11px;margin-bottom:11px">
+                        <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#46586a;width:18px;flex:none">{{ c.rank }}</span>
+                        <div style="flex:1;min-width:0">
+                          <div style="display:flex;justify-content:space-between;gap:8px;margin-bottom:5px"><span style="font-size:12.5px;color:#cdd9e3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.name }}</span><span style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8ea0b0;flex:none">{{ c.count }}×</span></div>
+                          <div style="height:6px;background:#16242f;border-radius:4px;overflow:hidden"><div style="width:{{ c.barW }};height:100%;background:linear-gradient(90deg,#0066b3,#009FE3)"></div></div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </sc-if>
+                  <sc-if value="{{ noEquivLog }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size:12.5px;color:#5a6b7b;line-height:1.6;padding:8px 0">Nenhuma consulta ainda. Use a Equivalência Comercial para registrar concorrentes.</div>
+                  </sc-if>
+                </div>
+              </div>
+
+              <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:20px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#009FE3;text-transform:uppercase;margin-bottom:16px">// log de roi</div>
+                <sc-if value="{{ hasRoiLog }}" hint-placeholder-val="{{ true }}">
+                  <div style="border:1px solid #1f2f3d;border-radius:11px;overflow:hidden">
+                    <div style="display:grid;grid-template-columns:{{ roiLogCols }};background:#0c1722;padding:11px 14px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;font-weight:500;color:#5a6b7b;text-transform:uppercase;letter-spacing:.5px"><span>Cliente</span><span>Projeto</span><span>Data</span><span>Economia 3a</span><span>Payback</span><span></span></div>
+                    <sc-for list="{{ roiLog }}" as="r" hint-placeholder-count="3">
+                      <div style="display:grid;grid-template-columns:{{ roiLogCols }};padding:12px 14px;font-size:12.5px;color:#cdd9e3;border-top:1px solid #1f2f3d;align-items:center;gap:8px">
+                        <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.client }}</span>
+                        <span style="color:#8ea0b0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.project }}</span>
+                        <span style="font-family:'IBM Plex Mono',monospace;color:#8ea0b0">{{ r.dateStr }}</span>
+                        <span style="font-family:'Space Grotesk',sans-serif;font-weight:700;color:{{ r.savingsColor }}">{{ r.savingsStr }}</span>
+                        <span style="font-family:'IBM Plex Mono',monospace;color:#009FE3">{{ r.paybackStr }}</span>
+                        <button class="gbtn" onClick="{{ r.onOpen }}" style="border:1px solid rgba(0,159,227,.4);background:rgba(0,159,227,.1);color:#009FE3;border-radius:7px;padding:7px 12px;font-size:11px;cursor:pointer;font-family:'IBM Plex Mono',monospace;white-space:nowrap">PDF →</button>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ noRoiLog }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:12.5px;color:#5a6b7b;line-height:1.6;padding:8px 0">Nenhum ROI salvo ainda. Calcule um ROI e clique em “Salvar e gerar relatório PDF” para registrar.</div>
+                </sc-if>
+              </div>
+
+              <div style="background:#13212e;border:1px solid #1f2f3d;border-radius:14px;padding:20px;margin-top:16px">
+                <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1.5px;color:#009FE3;text-transform:uppercase;margin-bottom:12px">// privacidade &amp; lgpd</div>
+                <p style="margin:0 0 16px;font-size:13px;color:#8ea0b0;line-height:1.6">Os dados de consulta e cadastro ficam armazenados <strong style="color:#cdd9e3">localmente no navegador deste dispositivo</strong> (localStorage) e o acesso a estes relatórios é restrito ao administrador. Nenhum dado é enviado a servidores externos neste protótipo. Conforme a LGPD, o titular pode solicitar acesso, exportação e eliminação dos dados.</p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap">
+                  <button class="gbtn" onClick="{{ exportData }}" style="border:1px solid #2a3a4a;background:#0c1722;color:#cdd9e3;border-radius:9px;padding:11px 16px;font-size:12.5px;font-weight:600;cursor:pointer">Exportar dados (JSON)</button>
+                  <button class="gbtn" onClick="{{ clearLogs }}" style="border:1px solid rgba(251,113,133,.4);background:rgba(251,113,133,.08);color:#fca5a5;border-radius:9px;padding:11px 16px;font-size:12.5px;font-weight:600;cursor:pointer">Limpar histórico de consultas</button>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+        </main>
+      </div>
+    </div>
+  </sc-if>
+
+  <!-- ============ ROI REPORT (client-facing / PDF) ============ -->
+  <sc-if value="{{ isReport }}" hint-placeholder-val="{{ false }}">
+    <div class="report-wrap" style="min-height:100vh;background:#e8edf1;padding:34px 20px;font-family:'IBM Plex Sans',sans-serif">
+      <div class="no-print" style="max-width:780px;margin:0 auto 18px;display:flex;align-items:center;gap:10px">
+        <button class="gbtn" onClick="{{ closeReport }}" style="border:1px solid #c2ccd4;background:#fff;color:#33414d;border-radius:9px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer">← Voltar</button>
+        <div style="flex:1"></div>
+        <button class="gbtn" onClick="{{ printReport }}" style="border:1px solid #c2ccd4;background:#fff;color:#33414d;border-radius:9px;padding:11px 16px;font-size:13px;font-weight:600;cursor:pointer">Imprimir</button>
+        <button class="gbtn" onClick="{{ exportPdf }}" style="border:0;background:#009FE3;color:#fff;border-radius:9px;padding:11px 20px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>{{ pdfLabel }}</button>
+      </div>
+
+      <div class="report-sheet" style="max-width:780px;margin:0 auto;background:#fff;border-radius:6px;box-shadow:0 12px 40px rgba(20,40,60,.18);overflow:hidden;color:#1c2a36">
+        <div style="background:#0a131c;padding:30px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px">
+          <div>
+            <div style="background:#fff;border-radius:9px;padding:9px 14px;display:inline-flex;margin-bottom:14px"><img src="assets/gvs-logo-oficial.png" alt="GVS" style="height:30px;width:auto;display:block"></div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:700;color:#fff;letter-spacing:-.3px">Análise de Retorno · TCO</div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:1.5px;color:#5fb4dd;text-transform:uppercase;margin-top:5px">Custo Total de Propriedade · 3 anos</div>
+          </div>
+          <div style="text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8ea0b0;line-height:1.9">
+            <div>Nº {{ reportId }}</div>
+            <div>{{ reportDate }}</div>
+          </div>
+        </div>
+
+        <div style="padding:26px 40px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;border-bottom:1px solid #e4e9ed">
+          <div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#90a0ad;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Cliente</div><div style="font-size:14px;font-weight:600;color:#1c2a36">{{ reportClient }}</div></div>
+          <div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#90a0ad;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Projeto</div><div style="font-size:14px;font-weight:600;color:#1c2a36">{{ reportProject }}</div></div>
+          <div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#90a0ad;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Usuários</div><div style="font-size:14px;font-weight:600;color:#1c2a36">{{ reportUsers }}</div></div>
+          <div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#90a0ad;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Dias/ano</div><div style="font-size:14px;font-weight:600;color:#1c2a36">{{ reportDays }}</div></div>
+        </div>
+
+        <div style="padding:30px 40px">
+          <div style="background:linear-gradient(120deg,#003a63,#009FE3);border-radius:14px;padding:26px 30px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:20px">
+            <div>
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;opacity:.85;margin-bottom:8px">Economia estimada em 3 anos</div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-size:40px;font-weight:700;letter-spacing:-1px;line-height:1">{{ reportSavings3y }}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:1px;text-transform:uppercase;opacity:.85;margin-bottom:8px">Payback</div>
+              <div style="font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700">{{ reportPayback }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="padding:0 40px 26px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#90a0ad;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px">Comparativo de custo total · 3 anos</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px"><span style="width:110px;font-size:12.5px;color:#5a6b7b;flex:none">Solução atual</span><div style="flex:1;height:26px;background:#eef2f5;border-radius:6px;overflow:hidden"><div style="width:{{ reportCompBarW }};height:100%;background:#90a0ad;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#fff;font-weight:600">{{ reportCompTotal }}</div></div></div>
+          <div style="display:flex;align-items:center;gap:14px"><span style="width:110px;font-size:12.5px;color:#0077b6;font-weight:600;flex:none">GVS / RPB</span><div style="flex:1;height:26px;background:#eef2f5;border-radius:6px;overflow:hidden"><div style="width:{{ reportGvsBarW }};height:100%;background:linear-gradient(90deg,#0066b3,#009FE3);display:flex;align-items:center;justify-content:flex-end;padding-right:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:#fff;font-weight:600">{{ reportGvsTotal }}</div></div></div>
+        </div>
+
+        <div style="padding:0 40px 28px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+          <div style="text-align:center;padding:16px 10px;border:1px solid #e4e9ed;border-radius:11px"><div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#0a7d3f">{{ reportSavingsYear }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#90a0ad;text-transform:uppercase;letter-spacing:.5px;margin-top:6px">/ ano</div></div>
+          <div style="text-align:center;padding:16px 10px;border:1px solid #e4e9ed;border-radius:11px"><div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#0a7d3f">{{ reportSavingsMonth }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#90a0ad;text-transform:uppercase;letter-spacing:.5px;margin-top:6px">/ mês</div></div>
+          <div style="text-align:center;padding:16px 10px;border:1px solid #e4e9ed;border-radius:11px"><div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#0a7d3f">{{ reportSavingsDay }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#90a0ad;text-transform:uppercase;letter-spacing:.5px;margin-top:6px">/ dia</div></div>
+          <div style="text-align:center;padding:16px 10px;border:1px solid rgba(0,159,227,.4);border-radius:11px;background:rgba(0,159,227,.06)"><div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:700;color:#009FE3">{{ reportUsers }}</div><div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#90a0ad;text-transform:uppercase;letter-spacing:.5px;margin-top:6px">usuários</div></div>
+        </div>
+
+        <div style="padding:0 40px 30px;display:grid;grid-template-columns:1fr 1fr;gap:18px">
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#5a6b7b;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Solução atual</div>
+            <div style="border:1px solid #e4e9ed;border-radius:10px;overflow:hidden">
+              <div style="display:grid;grid-template-columns:1.7fr .5fr .9fr;background:#f4f7f9;padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#90a0ad;text-transform:uppercase;letter-spacing:.5px"><span>Item</span><span>Qtd</span><span>Custo 3a</span></div>
+              <sc-for list="{{ reportCompRows }}" as="r" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:1.7fr .5fr .9fr;padding:9px 12px;font-size:11.5px;color:#33414d;border-top:1px solid #eef2f5;align-items:center"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.item }}</span><span style="font-family:'IBM Plex Mono',monospace">{{ r.qty }}</span><span style="font-family:'IBM Plex Mono',monospace">{{ r.costStr }}</span></div>
+              </sc-for>
+              <div style="display:grid;grid-template-columns:1.7fr .5fr .9fr;padding:10px 12px;font-size:12px;font-weight:700;color:#1c2a36;border-top:2px solid #e4e9ed;background:#f9fbfc"><span>Total</span><span></span><span style="font-family:'IBM Plex Mono',monospace">{{ reportCompTotal }}</span></div>
+            </div>
+          </div>
+          <div>
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:10px;color:#0077b6;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">GVS / RPB</div>
+            <div style="border:1px solid rgba(0,159,227,.3);border-radius:10px;overflow:hidden">
+              <div style="display:grid;grid-template-columns:1.7fr .5fr .9fr;background:rgba(0,159,227,.07);padding:9px 12px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:#0077b6;text-transform:uppercase;letter-spacing:.5px"><span>Item</span><span>Qtd</span><span>Custo 3a</span></div>
+              <sc-for list="{{ reportGvsRows }}" as="r" hint-placeholder-count="4">
+                <div style="display:grid;grid-template-columns:1.7fr .5fr .9fr;padding:9px 12px;font-size:11.5px;color:#33414d;border-top:1px solid #eef2f5;align-items:center"><span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.item }}</span><span style="font-family:'IBM Plex Mono',monospace">{{ r.qty }}</span><span style="font-family:'IBM Plex Mono',monospace">{{ r.costStr }}</span></div>
+              </sc-for>
+              <div style="display:grid;grid-template-columns:1.7fr .5fr .9fr;padding:10px 12px;font-size:12px;font-weight:700;color:#1c2a36;border-top:2px solid rgba(0,159,227,.25);background:rgba(0,159,227,.05)"><span>Total</span><span></span><span style="font-family:'IBM Plex Mono',monospace">{{ reportGvsTotal }}</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div style="background:#f4f7f9;padding:20px 40px;border-top:1px solid #e4e9ed;display:flex;justify-content:space-between;align-items:center;gap:16px">
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:#90a0ad;line-height:1.7;max-width:480px">Estimativa orientativa de custo total de propriedade. Valores baseados nos preços, quantidades e vida útil informados. Validar consumo real de filtros, política de manutenção e condições comerciais. Documento gerado por {{ reportUser }}.</div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:700;color:#009FE3;text-align:right;flex:none">GVS Safety<br>Intelligence</div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <datalist id="chemlist">
+    <sc-for list="{{ chemNames }}" as="n" hint-placeholder-count="6"><option value="{{ n }}"></option></sc-for>
+  </datalist>
+  <datalist id="prodlist">
+    <sc-for list="{{ productNames }}" as="p" hint-placeholder-count="6"><option value="{{ p }}"></option></sc-for>
+  </datalist>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  // ---------- DATA (amostra com valores publicados — validação da lógica) ----------
+  // ===== CONFIG BACKEND (Supabase) — preencha p/ ativar o modo nuvem seguro =====
+  // Ex.: SB = { url: 'https://SEU-PROJETO.supabase.co', anon: 'SUA_ANON_KEY' };
+  // Vazio = modo local (dados só neste dispositivo). Veja SETUP-SUPABASE.md.
+  SB = { url: 'https://pgcttrfiejigdqgnerny.supabase.co', anon: 'sb_publishable_fcQyFAxCxY-DpwGJRA0EIw_sm4ox6gC' };
+  get cloud(){ return !!(this.SB && this.SB.url && this.SB.anon); }
+
+  CHEM = [];
+
+  // 3M code → GVS/RPB filter class & product family
+  mapGVS(code){
+    const up=String(code||'').toUpperCase();
+    const supplied=/\bSA\b|SCBA/.test(up);
+    let part=''; if(/P3/.test(up))part='P3'; else if(/P2/.test(up))part='P2'; else if(/P1/.test(up))part='P1';
+    let cls='', fam='';
+    if(/VO/.test(up)&&/GA/.test(up)){ cls='A2B2'; fam='Vapor orgânico + gás ácido'; }
+    else if(/\bMG\b/.test(up)){ cls='ABEK1'; fam='Multigases'; }
+    else if(/VO/.test(up)){ cls='A2'; fam='Vapor orgânico'; }
+    else if(/GA/.test(up)){ cls='B2'; fam='Gás ácido'; }
+    else if(/\bAM\b/.test(up)){ cls='K2'; fam='Amônia'; }
+    else if(/FORM/.test(up)){ cls='B2·Form'; fam='Formaldeído'; }
+    else if(/HF/.test(up)){ cls='B2·HF'; fam='Ácido fluorídrico'; }
+    else if(/HG/.test(up)){ cls='Hg'; fam='Mercúrio'; }
+    else if(/OZ/.test(up)){ cls='A2'; fam='Ozônio'; }
+    else { fam='Particulado'; }
+    const isGas=!!cls;
+    const p = part || (isGas?'P3':'');
+    const classe = supplied ? 'Ar mandado' : (((cls||'') + (p||'')) || '—');
+    return { supplied, fam, classe, isGas, part:p };
+  }
+
+  fmt(v){ if(v==null||v==='')return '—'; const n=Number(v); if(isNaN(n))return String(v); return n.toLocaleString('pt-BR',{maximumFractionDigits:3}); }
+
+  APF_OPTIONS = [
+    { technology:'APR meia-face',        apf:10,    type:'APR' },
+    { technology:'APR c/ visor integrado', apf:10,  type:'APR' },
+    { technology:'Full Face APR',        apf:50,    type:'APR' },
+    { technology:'PAPR (PX5)',           apf:1000,  type:'PAPR' },
+    { technology:'SAR / SCBA',           apf:10000, type:'SAR' }
+  ];
+
+  EQUIV = [
+    { comp:'3M', prod:'Adflo', cat:'PAPR Solda', gvs:'Z4 + PX5 ou Z-Link+ + PX5', tech:'PAPR', fam:'RPB Z4 / Z-Link', filter:'HEPA/P3', angle:'Conversão direta de PAPR de solda: maior conforto, fluxo de ar e portfólio modular de capacetes, com menor complexidade de serviço a longo prazo.', notes:'Validar processo de solda, fumos, APF/FPA e homologação local.', pri:'Alta' },
+    { comp:'3M', prod:'Speedglas Adflo', cat:'PAPR Solda', gvs:'Z4 + PX5 ou Z-Link+ + PX5', tech:'PAPR', fam:'RPB Z4 / Z-Link', filter:'HEPA/P3', angle:'Oportunidade direta de conversão de PAPR de solda Speedglas.', notes:'Validar configuração de capacete e classe de filtro.', pri:'Alta' },
+    { comp:'3M', prod:'Versaflo TR-300', cat:'PAPR Particulado', gvs:'PX5 + Z-Link / T-Link / T200', tech:'PAPR', fam:'RPB PX5', filter:'HEPA/P3', angle:'Portfólio modular de capacetes e diferenciação por conforto.', notes:'Validar aplicação somente de particulado.', pri:'Alta' },
+    { comp:'3M', prod:'Versaflo TR-600', cat:'PAPR Multigás', gvs:'PX5 + filtro compatível + Z-Link / T-Link / T200', tech:'PAPR', fam:'RPB PX5', filter:'A2P3 / ABEK-P / HEPA', angle:'Plataforma de ar motorizado modular GVS/RPB.', notes:'Validar compatibilidade de cartucho gás/vapor e vida útil.', pri:'Alta' },
+    { comp:'3M', prod:'6000 Half Face', cat:'Semifacial APR', gvs:'GVS Elipse', tech:'APR meia-face', fam:'Elipse', filter:'P3 / A1P3 / A2P3 / ABEK1P3', angle:'Alternativa compacta, leve e de baixo perfil.', notes:'Combinar a classe de cartucho ao contaminante.', pri:'Alta' },
+    { comp:'3M', prod:'6800 Full Face', cat:'Full Face APR', gvs:'GVS Full Face', tech:'Full Face APR', fam:'GVS Full Face', filter:'P3 / A2P3 / ABEK1P3', angle:'Alternativa full face com o portfólio de filtros GVS.', notes:'Validar proteção gás/vapor e particulado.', pri:'Alta' },
+    { comp:'Honeywell', prod:'North 7700', cat:'Semifacial APR', gvs:'GVS Elipse', tech:'APR meia-face', fam:'Elipse', filter:'P3 / A1P3 / A2P3 / ABEK1P3', angle:'Alternativa compacta de baixo perfil.', notes:'Validar classe de filtro e vedação.', pri:'Média' },
+    { comp:'Honeywell', prod:'North 7600', cat:'Full Face APR', gvs:'GVS Full Face', tech:'Full Face APR', fam:'GVS Full Face', filter:'P3 / A2P3 / ABEK1P3', angle:'Oportunidade de conversão full face.', notes:'Validar compatibilidade de cartucho.', pri:'Média' },
+    { comp:'Honeywell', prod:'PA700', cat:'PAPR', gvs:'PX5 + capacete compatível', tech:'PAPR', fam:'RPB PX5', filter:'HEPA / A2P3 / ABEK-P', angle:'Oportunidade de conversão de PAPR.', notes:'Validar aplicação e APF.', pri:'Média' },
+    { comp:'MSA', prod:'Advantage 200 LS', cat:'Semifacial APR', gvs:'GVS Elipse', tech:'APR meia-face', fam:'Elipse', filter:'P3 / A1P3 / A2P3 / ABEK1P3', angle:'Alternativa leve e compacta.', notes:'Validar vedação e classe de filtro.', pri:'Média' },
+    { comp:'MSA', prod:'OptimAir', cat:'PAPR', gvs:'PX5 + capacete compatível', tech:'PAPR', fam:'RPB PX5', filter:'HEPA / A2P3 / ABEK-P', angle:'Oportunidade de conversão de PAPR.', notes:'Validar processo e contaminante.', pri:'Média' },
+    { comp:'Dräger', prod:'X-plore 3300', cat:'Semifacial APR', gvs:'GVS Elipse', tech:'APR meia-face', fam:'Elipse', filter:'P3 / A1P3 / A2P3 / ABEK1P3', angle:'Alternativa compacta para APR reutilizável.', notes:'Validar classe de filtro.', pri:'Média' },
+    { comp:'Dräger', prod:'X-plore 5500', cat:'Full Face APR', gvs:'GVS Full Face', tech:'Full Face APR', fam:'GVS Full Face', filter:'P3 / A2P3 / ABEK1P3', angle:'Oportunidade de conversão full face.', notes:'Validar APF/FPA.', pri:'Média' },
+    { comp:'Dräger', prod:'X-plore 8000', cat:'PAPR', gvs:'PX5 + capacete compatível', tech:'PAPR', fam:'RPB PX5', filter:'HEPA / A2P3 / ABEK-P', angle:'Oportunidade de conversão de plataforma PAPR.', notes:'Validar filtro e capacete.', pri:'Alta' },
+    { comp:'Bullard', prod:'EVA', cat:'PAPR', gvs:'PX5 + Z-Link / T-Link / T200', tech:'PAPR', fam:'RPB PX5', filter:'HEPA / A2P3 / ABEK-P', angle:'Alternativa de PAPR modular.', notes:'Validar contaminante e APF.', pri:'Média' },
+    { comp:'Bullard', prod:'88VX', cat:'SAR Jateamento', gvs:'Nova3', tech:'SAR', fam:'RPB Nova3', filter:'Ar mandado', angle:'Forte oportunidade de conversão em jateamento abrasivo.', notes:'Validar qualidade do ar comprimido e setup de jateamento.', pri:'Alta' },
+    { comp:'Clemco', prod:'Apollo 600', cat:'SAR Jateamento', gvs:'Nova3', tech:'SAR', fam:'RPB Nova3', filter:'Ar mandado', angle:'Conversão de respirador premium de jateamento.', notes:'Validar processo de jateamento e climatização.', pri:'Alta' },
+    { comp:'RPB', prod:'Z-Link', cat:'PAPR/SAR Multiuso', gvs:'Z-Link + PX5 ou SAR', tech:'PAPR/SAR', fam:'RPB Z-Link', filter:'HEPA / A2P3 / ABEK-P / ar mandado', angle:'Produto de referência interno.', notes:'Selecionar configuração por contaminante/processo.', pri:'Alta' }
+  ];
+
+  state = {
+    screen: 'auth', vw: 1280,
+    authMode: 'login', authName: '', authCompany: '', authEmail: '', authPassword: '', authError: '',
+    authConsent: false, showPrivacy: false, pdfBusy: false,
+    currentUser: null, logs: { chem:{}, equiv:{}, roi:[] }, reportData: null,
+    safeQuery: 'Acetona', safeSource: 'NR15', safeConc: '1250', safeUnit: 'ppm', safeO2: '20.9',
+    safeRes: null, safeError: '',
+    equivCompetitor: '3M', equivProduct: 'Adflo', equivRes: null, equivError: '',
+    roiClient: 'Cliente ABC', roiProject: 'Conversão PAPR solda', roiUsers: '20', roiDays: '250',
+    competitorItems: [
+      { item:'Capacete/Headtop', qty:'1', unitPrice:'1200', lifeValue:'24', lifeUnit:'months' },
+      { item:'Conjunto PAPR', qty:'1', unitPrice:'3500', lifeValue:'36', lifeUnit:'months' },
+      { item:'Bateria', qty:'1', unitPrice:'900', lifeValue:'18', lifeUnit:'months' },
+      { item:'Filtro', qty:'1', unitPrice:'180', lifeValue:'30', lifeUnit:'days' },
+      { item:'Pré-filtro', qty:'1', unitPrice:'30', lifeValue:'7', lifeUnit:'days' }
+    ],
+    gvsItems: [
+      { item:'RPB Z4 Headtop', qty:'1', unitPrice:'1000', lifeValue:'36', lifeUnit:'months' },
+      { item:'RPB PX5 PAPR', qty:'1', unitPrice:'3000', lifeValue:'60', lifeUnit:'months' },
+      { item:'Bateria', qty:'1', unitPrice:'700', lifeValue:'36', lifeUnit:'months' },
+      { item:'Filtro HEPA', qty:'1', unitPrice:'150', lifeValue:'45', lifeUnit:'days' },
+      { item:'Pré-filtro', qty:'1', unitPrice:'20', lifeValue:'14', lifeUnit:'days' }
+    ],
+    roiRes: null
+  };
+
+  componentDidMount() {
+    this.CHEM = (window.GVS_CHEM && window.GVS_CHEM.chem) || [];
+    let user=null, logs={chem:{},equiv:{},roi:[]};
+    try { user = JSON.parse(localStorage.getItem('gvs_current_user')||'null'); } catch(e){}
+    try { const lg = JSON.parse(localStorage.getItem('gvs_logs')); if(lg) logs = lg; } catch(e){}
+    let screen = 'auth';
+    if (user) { try { screen = localStorage.getItem('gvs_cockpit_screen') || 'home'; } catch(e){ screen='home'; } if(screen==='auth'||screen==='roiReport') screen='home'; }
+    this.setState({ currentUser:user, logs, screen });
+    if(this.cloud){ this.setState({ currentUser:null, screen:'auth' }); this.restoreCloudSession(); }
+    if (typeof window !== 'undefined') {
+      this.setState({ vw: window.innerWidth });
+      this._onResize = () => {
+        if (this._raf) return;
+        this._raf = requestAnimationFrame(() => { this._raf = null; if (window.innerWidth !== this.state.vw) this.setState({ vw: window.innerWidth }); });
+      };
+      window.addEventListener('resize', this._onResize);
+    }
+    this.forceUpdate();
+    this.computeSafe();
+    this.computeEquiv();
+    this.computeRoi();
+  }
+  componentWillUnmount() { if (this._onResize) window.removeEventListener('resize', this._onResize); }
+
+  go(screen) { this.setState({ screen }); try { localStorage.setItem('gvs_cockpit_screen', screen); } catch (e) {} if(screen==='insights' && this.cloud){ this.loadCloudLogs(); } }
+
+  // ---------- AUTH ----------
+  loadUsers(){ try { return JSON.parse(localStorage.getItem('gvs_users')||'[]'); } catch(e){ return []; } }
+  saveUsers(u){ try { localStorage.setItem('gvs_users', JSON.stringify(u)); } catch(e){} }
+  tabStyle(active){ const base='flex:1;padding:10px 0;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:0;font-family:inherit;'; return active ? base+'background:#009FE3;color:#06121b;' : base+'background:transparent;color:#8ea0b0;'; }
+  submitAuth(){
+    if(this.cloud){ this.submitAuthCloud(); return; }
+    const s=this.state; const email=this.norm(s.authEmail); const pwd=s.authPassword;
+    if(!email){ this.setState({authError:'Informe seu e-mail.'}); return; }
+    if(!pwd){ this.setState({authError:'Informe sua senha.'}); return; }
+    const users=this.loadUsers();
+    if(s.authMode==='signup'){
+      if(!s.authName.trim()){ this.setState({authError:'Informe seu nome.'}); return; }
+      if(!s.authConsent){ this.setState({authError:'É necessário aceitar a Política de Privacidade (LGPD) para criar a conta.'}); return; }
+      if(users.some(u=>this.norm(u.email)===email)){ this.setState({authError:'Já existe uma conta com este e-mail. Faça login.'}); return; }
+      const role = users.length===0 ? 'admin' : 'user';
+      const user={ name:s.authName.trim(), company:s.authCompany.trim(), email:s.authEmail.trim(), role };
+      users.push({...user, pwd}); this.saveUsers(users); this.loginUser(user);
+    } else {
+      const found=users.find(u=>this.norm(u.email)===email && u.pwd===pwd);
+      if(!found){ this.setState({authError:'E-mail ou senha incorretos.'}); return; }
+      this.loginUser({ name:found.name, company:found.company, email:found.email, role:found.role||'user' });
+    }
+  }
+  loginUser(user){
+    try { localStorage.setItem('gvs_current_user', JSON.stringify(user)); localStorage.setItem('gvs_cockpit_screen','home'); } catch(e){}
+    this.setState({ currentUser:user, authError:'', authPassword:'', screen:'home' });
+  }
+  logout(){
+    if(this.cloud){ this.ensureSb().then(sb=>{ try{ if(sb) sb.auth.signOut(); }catch(e){} }); }
+    try { localStorage.removeItem('gvs_current_user'); } catch(e){}
+    this.setState({ currentUser:null, screen:'auth', authMode:'login', authPassword:'', authError:'' });
+  }
+
+  // ---------- USAGE LOG ----------
+  persistLogs(logs){ try { localStorage.setItem('gvs_logs', JSON.stringify(logs)); } catch(e){} }
+  logChem(name){ if(!name)return; if(this.cloud){ this.cloudInsert('consultas',{tipo:'contaminante',termo:name}); return; } const l=this.state.logs||{}; const chem={...(l.chem||{})}; chem[name]=(chem[name]||0)+1; const logs={...l,chem}; this.persistLogs(logs); this.setState({logs}); }
+  logEquivItem(name){ if(!name)return; if(this.cloud){ this.cloudInsert('consultas',{tipo:'concorrente',termo:name}); return; } const l=this.state.logs||{}; const equiv={...(l.equiv||{})}; equiv[name]=(equiv[name]||0)+1; const logs={...l,equiv}; this.persistLogs(logs); this.setState({logs}); }
+  saveRoiLog(){
+    const s=this.state, rr=s.roiRes; if(!rr) return null;
+    const entry={ id:Date.now(), date:new Date().toISOString(),
+      user:(s.currentUser&&s.currentUser.name)||'—',
+      client:s.roiClient, project:s.roiProject, users:s.roiUsers, days:s.roiDays,
+      competitorItems:s.competitorItems, gvsItems:s.gvsItems,
+      compTotal:rr.comp.threeYr, gvsTotal:rr.gvs.threeYr,
+      annualSavings:rr.annualSavings, threeYrSavings:rr.threeYrSavings,
+      monthlySavings:rr.monthlySavings, dailySavings:rr.dailySavings, payback:rr.payback };
+    if(this.cloud){ this.cloudInsertRoi(entry); return entry; }
+    const l=this.state.logs||{}; const roi=[entry, ...(l.roi||[])].slice(0,60); const logs={...l,roi};
+    this.persistLogs(logs); this.setState({logs}); return entry;
+  }
+  itemCost3yr(it, users, days){ const qty=Number(it.qty)||0, price=Number(it.unitPrice)||0; const perUser=qty*price; const init=perUser*users; const lifeDays=this.lifeToDays(it.lifeValue,it.lifeUnit); const factor=lifeDays>0?days/lifeDays:0; return init + perUser*factor*users*3; }
+
+  // ---------- REPORT ----------
+  openReport(entry, from){ this._reportReturn = from||'roi'; this.setState({ reportData:entry, screen:'roiReport' }); }
+  generateReport(){ const e=this.saveRoiLog(); if(e) this.openReport(e,'roi'); }
+  printReport(){ if(typeof window!=='undefined') window.print(); }
+  closeReport(){ this.setState({ screen: this._reportReturn || 'roi' }); }
+  ensureHtml2pdf(){
+    return new Promise((resolve)=>{
+      if(typeof window==='undefined') return resolve(null);
+      if(window.html2pdf) return resolve(window.html2pdf);
+      const sc=document.createElement('script');
+      sc.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+      sc.async=true;
+      sc.onload=()=>resolve(window.html2pdf||null);
+      sc.onerror=()=>resolve(null);
+      document.head.appendChild(sc);
+    });
+  }
+  exportPdf(){
+    const el = (typeof document!=='undefined') && document.querySelector('.report-sheet');
+    if(!el){ this.printReport(); return; }
+    this.setState({ pdfBusy:true });
+    this.ensureHtml2pdf().then((h2p)=>{
+      if(!h2p){ this.setState({ pdfBusy:false }); this.printReport(); return; }
+      const rd=this.state.reportData||{};
+      const safe=String(rd.client||'cliente').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^\w]+/g,'_');
+      h2p().set({
+        margin:[8,8,8,8], filename:'GVS_ROI_'+safe+'.pdf',
+        image:{type:'jpeg',quality:0.98},
+        html2canvas:{scale:2, backgroundColor:'#ffffff', useCORS:true},
+        jsPDF:{unit:'mm', format:'a4', orientation:'portrait'}
+      }).from(el).save().then(()=>this.setState({ pdfBusy:false })).catch(()=>{ this.setState({ pdfBusy:false }); this.printReport(); });
+    });
+  }
+  exportData(){
+    if(typeof document==='undefined') return;
+    const users=this.loadUsers().map(u=>({ name:u.name, email:u.email, company:u.company, role:u.role }));
+    const data={ exportedAt:new Date().toISOString(), users, logs:this.state.logs };
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='gvs_dados_lgpd.json'; a.click();
+    setTimeout(()=>{ try{ URL.revokeObjectURL(a.href); }catch(e){} },2000);
+  }
+  clearLogs(){
+    if(typeof window!=='undefined' && window.confirm && !window.confirm('Eliminar todo o histórico de consultas e ROIs? Esta ação não pode ser desfeita.')) return;
+    if(this.cloud){ this.cloudClear(); return; }
+    const logs={chem:{},equiv:{},roi:[]}; this.persistLogs(logs); this.setState({logs});
+  }
+
+  // ---------- SUPABASE (modo nuvem seguro) ----------
+  ensureSb(){
+    return new Promise((resolve)=>{
+      if(this._sb) return resolve(this._sb);
+      if(!this.cloud || typeof document==='undefined') return resolve(null);
+      const init=()=>{ try{ this._sb=window.supabase.createClient(this.SB.url, this.SB.anon); resolve(this._sb); }catch(e){ resolve(null); } };
+      if(window.supabase && window.supabase.createClient) return init();
+      const sc=document.createElement('script'); sc.src='https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'; sc.async=true; sc.onload=init; sc.onerror=()=>resolve(null); document.head.appendChild(sc);
+    });
+  }
+  restoreCloudSession(){
+    this.ensureSb().then(async (sb)=>{
+      if(!sb) return;
+      try{
+        const { data:{ session } } = await sb.auth.getSession();
+        if(session && session.user) await this.loadCloudUser(sb, session.user);
+        sb.auth.onAuthStateChange((_e, sess)=>{ if(!sess){ this.setState({ currentUser:null, screen:'auth' }); } });
+      }catch(e){}
+    });
+  }
+  async loadCloudUser(sb, authUser){
+    let profile=null;
+    try{ const { data } = await sb.from('profiles').select('name,company,is_admin').eq('id', authUser.id).single(); profile=data; }catch(e){}
+    const user={ id:authUser.id, email:authUser.email, name:(profile&&profile.name)||authUser.email, company:(profile&&profile.company)||'', role:(profile&&profile.is_admin)?'admin':'user' };
+    this.setState({ currentUser:user, authError:'', authPassword:'', screen:'home' });
+    if(user.role==='admin') this.loadCloudLogs(sb);
+  }
+  loginGoogle(){
+    if(!this.cloud) return;
+    this.ensureSb().then(sb=>{
+      if(!sb){ this.setState({authError:'Não foi possível conectar ao servidor.'}); return; }
+      try{ sb.auth.signInWithOAuth({ provider:'google', options:{ redirectTo: window.location.href } }); }
+      catch(e){ this.setState({authError:'Falha ao iniciar o login com Google.'}); }
+    });
+  }
+  async submitAuthCloud(){
+    const s=this.state; const sb=await this.ensureSb();
+    if(!sb){ this.setState({authError:'Não foi possível conectar ao servidor. Tente novamente.'}); return; }
+    if(!s.authEmail.trim()){ this.setState({authError:'Informe seu e-mail.'}); return; }
+    if(!s.authPassword){ this.setState({authError:'Informe sua senha.'}); return; }
+    try{
+      if(s.authMode==='signup'){
+        if(!s.authName.trim()){ this.setState({authError:'Informe seu nome.'}); return; }
+        if(!s.authConsent){ this.setState({authError:'É necessário aceitar a Política de Privacidade (LGPD).'}); return; }
+        const { data, error } = await sb.auth.signUp({ email:s.authEmail.trim(), password:s.authPassword, options:{ data:{ name:s.authName.trim(), company:s.authCompany.trim() } } });
+        if(error){ this.setState({authError:error.message}); return; }
+        if(data.session && data.user){ await this.loadCloudUser(sb, data.user); }
+        else { this.setState({authError:'Conta criada! Confirme o e-mail enviado e depois faça login.', authMode:'login'}); }
+      } else {
+        const { data, error } = await sb.auth.signInWithPassword({ email:s.authEmail.trim(), password:s.authPassword });
+        if(error){ this.setState({authError:'E-mail ou senha incorretos.'}); return; }
+        await this.loadCloudUser(sb, data.user);
+      }
+    }catch(e){ this.setState({authError:'Erro de autenticação. Tente novamente.'}); }
+  }
+  async cloudInsert(table, row){ const sb=await this.ensureSb(); if(!sb) return; const u=this.state.currentUser; if(!u||!u.id) return; try{ await sb.from(table).insert({ ...row, user_id:u.id }); }catch(e){} }
+  async cloudInsertRoi(entry){ const sb=await this.ensureSb(); if(!sb) return; const u=this.state.currentUser; if(!u||!u.id) return; try{ await sb.from('roi_logs').insert({ user_id:u.id, client:entry.client, project:entry.project, users:Number(entry.users)||null, days:Number(entry.days)||null, competitor_items:entry.competitorItems, gvs_items:entry.gvsItems, comp_total:entry.compTotal, gvs_total:entry.gvsTotal, annual_savings:entry.annualSavings, three_yr_savings:entry.threeYrSavings, monthly_savings:entry.monthlySavings, daily_savings:entry.dailySavings, payback:entry.payback }); if((this.state.currentUser||{}).role==='admin') this.loadCloudLogs(sb); }catch(e){} }
+  async loadCloudLogs(sb){
+    sb = sb || await this.ensureSb(); if(!sb) return;
+    try{
+      const { data:cons } = await sb.from('consultas').select('tipo,termo');
+      const chem={}, equiv={};
+      (cons||[]).forEach(r=>{ if(r.tipo==='contaminante') chem[r.termo]=(chem[r.termo]||0)+1; else if(r.tipo==='concorrente') equiv[r.termo]=(equiv[r.termo]||0)+1; });
+      const { data:rois } = await sb.from('roi_logs').select('*').order('created_at',{ascending:false}).limit(60);
+      const roi=(rois||[]).map(r=>({ id:r.id, date:r.created_at, user:'', client:r.client, project:r.project, users:r.users, days:r.days, competitorItems:r.competitor_items, gvsItems:r.gvs_items, compTotal:r.comp_total, gvsTotal:r.gvs_total, annualSavings:r.annual_savings, threeYrSavings:r.three_yr_savings, monthlySavings:r.monthly_savings, dailySavings:r.daily_savings, payback:r.payback }));
+      this.setState({ logs:{ chem, equiv, roi } });
+    }catch(e){}
+  }
+  async cloudClear(){ const sb=await this.ensureSb(); if(!sb) return; try{ await sb.from('consultas').delete().gt('id',0); await sb.from('roi_logs').delete().gt('id',0); this.setState({ logs:{chem:{},equiv:{},roi:[]} }); }catch(e){} }
+
+  // ---------- helpers ----------
+  norm(s){ return String(s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); }
+  brl(v){ return (Number(v)||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}); }
+  lifeToDays(v,u){ const n=Number(v)||0; if(!n) return 0; return (u==='days') ? n : n*30.4375; }
+
+  // ---------- SAFESELECT ENGINE ----------
+  findChem(q){
+    const n=this.norm(q); if(!n) return null;
+    const t=String(q||'').trim();
+    const C=this.CHEM||[];
+    return C.find(c=> c.cas===t || this.norm(c.nome)===n)
+        || C.find(c=> this.norm(c.nome).indexOf(n)>=0 || this.norm(c.sin).indexOf(n)>=0 || (c.cas && c.cas.indexOf(t)>=0));
+  }
+  selectLimit(chem, source, unit){
+    const isPpm = /ppm/i.test(unit) || this.norm(unit)==='ppm';
+    const sources = {
+      NR15:  { ppm:chem.ltP,  mgm3:chem.ltM,  label:'LT NR-15' },
+      ACGIH: { ppm:chem.tlvP, mgm3:chem.tlvM, label:'ACGIH TLV' }
+    };
+    const order = source==='ACGIH' ? ['ACGIH','NR15'] : ['NR15','ACGIH'];
+    for(const key of order){ const s=sources[key]; const v=isPpm?s.ppm:s.mgm3;
+      if(v!=null && v>0) return { value:v, unit:isPpm?'ppm':'mg/m³', sourceKey:key, label:s.label, fallback:key!==source }; }
+    for(const key of order){ const s=sources[key]; const v=isPpm?s.mgm3:s.ppm;
+      if(v!=null && v>0) return { value:v, unit:isPpm?'mg/m³':'ppm', sourceKey:key, label:s.label, fallback:key!==source, unitMismatch:true }; }
+    return null;
+  }
+
+  computeSafe(track){
+    const chem=this.findChem(this.state.safeQuery);
+    if(!chem){ this.setState({ safeRes:null, safeError:'Gás não encontrado na base (777 compostos). Tente outro nome químico, sinônimo ou número CAS.' }); return; }
+    const conc=Number(String(this.state.safeConc).replace(',','.'));
+    const unit=this.state.safeUnit;
+    const o2=Number(String(this.state.safeO2).replace(',','.'));
+    if(!conc || conc<=0){ this.setState({ safeRes:null, safeError:'Informe uma concentração válida maior que zero.' }); return; }
+
+    const lim=this.selectLimit(chem, this.state.safeSource, unit);
+    const map=this.mapGVS(chem.cod);
+
+    let fallbackMsg='';
+    if(lim && lim.fallback) fallbackMsg=`A fonte ${this.state.safeSource==='NR15'?'NR-15':'ACGIH'} não possui limite para este gás. Usado ${lim.label} como alternativa.`;
+
+    let formula='', ratio=null, apfReq=null, limStr='—', limLabel='Limite';
+    if(!lim){
+      formula='Sem limite de exposição (NR-15 ou TLV) na base para este gás. Selecione o filtro pela recomendação do guia e valide com FISPQ/SDS.';
+    } else if(lim.unitMismatch){
+      limLabel=lim.label; limStr=`${this.fmt(lim.value)} ${lim.unit}`;
+      formula=`Unidade medida (${unit}) difere da unidade do limite (${lim.unit}). A conversão exige a massa molar — ajuste a unidade para calcular o FPMR.`;
+    } else {
+      limLabel=lim.label; limStr=`${this.fmt(lim.value)} ${lim.unit}`;
+      ratio=conc/lim.value; apfReq=Math.max(1, Math.ceil(ratio));
+      formula=`${this.fmt(conc)} ${unit} ÷ ${this.fmt(lim.value)} ${lim.unit}  =  FPMR ${this.fmt(Math.round(ratio*100)/100)}×   →   FPA requerido > ${apfReq}`;
+    }
+
+    const idlhSame = chem.idlh!=null && this.norm(chem.idlhU)===this.norm(unit);
+    const idlhReached = idlhSame ? conc>=chem.idlh : false;
+    const o2Def = (o2 && o2<19.5);
+    const blockFiltering = idlhReached || o2Def || map.supplied;
+
+    let badge='Baixo', badgeColor='#22c55e';
+    if(idlhReached){ badge='IPVS/IDLH — crítico'; badgeColor='#fb7185'; }
+    else if(map.supplied){ badge='Ar mandado'; badgeColor='#fb923c'; }
+    else if(ratio===null){ badge='Conferir dados'; badgeColor='#fbbf24'; }
+    else if(ratio>50){ badge='Alto'; badgeColor='#fb7185'; }
+    else if(ratio>10){ badge='Médio'; badgeColor='#fb923c'; }
+    else if(ratio>1){ badge='Moderado'; badgeColor='#fbbf24'; }
+
+    const tech = blockFiltering ? 'Ar mandado (SAR / SCBA)' : `APR / PAPR — ${map.fam}`;
+
+    const options=this.APF_OPTIONS.map(o=>{
+      let prod;
+      if(o.type==='SAR') prod='RPB Nova3 (ar mandado)';
+      else if(o.type==='PAPR') prod=`RPB PX5 + ${map.supplied?'ar mandado':map.classe}`;
+      else if(o.technology.indexOf('Full')>=0) prod=`GVS Full Face ${map.supplied?'—':map.classe}`;
+      else prod=`GVS Elipse ${map.supplied?'—':map.classe}`;
+      let ok, label;
+      if(blockFiltering){ ok=o.type==='SAR'; label= ok?'✓ Adequado':(o2Def?'⛔ O₂ baixo':(idlhReached?'⛔ Bloqueado (IDLH)':'⛔ Requer ar mandado')); }
+      else if(apfReq===null){ ok=o.type!=='SAR'; label= map.supplied?'—':'Conforme guia'; }
+      else { ok=o.apf>=apfReq; label= ok?'✓ Adequado':'✗ Não atende'; }
+      const color= ok?'#22c55e':(label.indexOf('⚠')>=0?'#fbbf24':'#fb7185');
+      return { technology:o.technology, apf:o.apf, product:prod, statusLabel:label,
+        statusStyle:`color:${color};font-weight:600;font-family:'IBM Plex Mono',monospace;font-size:11px` };
+    });
+
+    let note='Resultado orientativo — validar com FISPQ/SDS, fit test, vedação, FPA/FPMR requerido e legislação local (NR-15 / PPR Fundacentro).';
+    if(map.supplied) note='O guia recomenda ar mandado (SA/SCBA) para este composto: baixa propriedade de alerta, adsorvente ineficaz ou alta toxicidade. Não usar respirador filtrante.';
+    if(chem.obs) note=chem.obs+' · '+note;
+
+    const allLimits = [
+      chem.ltP!=null?`NR-15 ${this.fmt(chem.ltP)} ppm`:(chem.ltM!=null?`NR-15 ${this.fmt(chem.ltM)} mg/m³`:'NR-15 —'),
+      chem.tlvP!=null?`TLV ${this.fmt(chem.tlvP)} ppm`:(chem.tlvM!=null?`TLV ${this.fmt(chem.tlvM)} mg/m³`:'TLV —'),
+      chem.idlh!=null?`IPVS ${this.fmt(chem.idlh)} ${chem.idlhU}`:'IPVS —'
+    ].join('  ·  ');
+
+    this.setState({ safeError:'', safeRes:{
+      name:chem.nome, sub:`CAS ${chem.cas||'—'}${chem.sin?' · '+chem.sin.split(',')[0]:''}`,
+      stel:chem.stel||'', teto:chem.teto||'', irr:chem.irr||'',
+      badge, badgeColor, fallbackMsg, formula,
+      concStr:`${this.fmt(conc)} ${unit}`, limitLabel:limLabel, limitStr:limStr,
+      apfStr: apfReq===null?'—':`> ${apfReq}×`,
+      apfColor: apfReq===null?'#fbbf24':(apfReq>50?'#fb7185':apfReq>10?'#fb923c':'#22c55e'),
+      idlhStr: chem.idlh!=null?(idlhReached?'Atingido':'Não atingido'):'—',
+      idlhSubColor: idlhReached?'#fb7185':'#22c55e',
+      filter:`${chem.cod||'—'}  →  GVS ${map.classe}`, tech, allLimits,
+      o2Warn: o2Def?`O₂ medido ${o2}% abaixo de 19,5% — deficiência de oxigênio. Proibido respirador filtrante; usar ar mandado/autônomo (SAR/SCBA).`:'',
+      options, note
+    }});
+    if(track) this.logChem(chem.nome);
+  }
+
+  // ---------- EQUIVALENCE ENGINE ----------
+  computeEquiv(track){
+    const comp = this.state.equivCompetitor;
+    const prod = this.state.equivProduct;
+    if(!comp && !prod){ this.setState({ equivRes:null, equivError:'Informe o concorrente e/ou o modelo do produto.' }); return; }
+    const np=this.norm(prod), nc=this.norm(comp);
+    const scored = this.EQUIV.map(r=>{
+      let s=0; const hay=this.norm([r.comp,r.prod,r.cat,r.gvs,r.tech,r.filter].join(' '));
+      if(comp && this.norm(r.comp)===nc) s+=40;
+      if(prod && this.norm(r.prod).indexOf(np)>=0) s+=50;
+      if(prod) np.split(/\s+/).filter(Boolean).forEach(t=>{ if(hay.indexOf(t)>=0) s+=3; });
+      if(r.pri==='Alta') s+=5;
+      return {r,s};
+    }).filter(x=>x.s>0).sort((a,b)=>b.s-a.s).slice(0,3);
+
+    if(!scored.length){ this.setState({ equivRes:null, equivError:'Nenhuma equivalência encontrada. Tente outro modelo (ex.: Adflo, Versaflo TR-300, 6800, X-plore 5500, 88VX).' }); return; }
+    const top=scored[0].r;
+    const others=scored.slice(1).map(x=>({ comp:`${x.r.comp} ${x.r.prod}`, gvs:x.r.gvs }));
+    this.setState({ equivError:'', equivRes:{
+      compName:`${top.comp} ${top.prod}`, category:top.cat, gvsEquiv:top.gvs, gvsTech:top.tech,
+      family:top.fam, filter:top.filter, priority:top.pri, angle:top.angle, notes:top.notes, others
+    }});
+    if(track) this.logEquivItem(top.comp+' '+top.prod);
+  }
+
+  // ---------- ROI ENGINE ----------
+  roiSide(items, users, daysPerYear){
+    let initial=0, annual=0;
+    items.forEach(it=>{
+      const qty=Number(it.qty)||0, price=Number(it.unitPrice)||0;
+      const perUser=qty*price; const initTotal=perUser*users;
+      const lifeDays=this.lifeToDays(it.lifeValue, it.lifeUnit);
+      const factor = lifeDays>0 ? (daysPerYear/lifeDays) : 0;
+      initial += initTotal;
+      annual += perUser*factor*users;
+    });
+    return { initial, annual, threeYr: initial + annual*3 };
+  }
+
+  computeRoi(){
+    const users=Number(this.state.roiUsers)||1;
+    const days=Number(this.state.roiDays)||250;
+    const comp=this.roiSide(this.state.competitorItems, users, days);
+    const gvs=this.roiSide(this.state.gvsItems, users, days);
+    const annualSavings=comp.annual-gvs.annual;
+    const threeYrSavings=comp.threeYr-gvs.threeYr;
+    const incremental=gvs.initial-comp.initial;
+    let payback=null;
+    if(annualSavings>0) payback = incremental>0 ? (incremental/annualSavings)*12 : 0;
+
+    const max=Math.max(comp.threeYr, gvs.threeYr, 1);
+    this.setState({ roiRes:{
+      comp, gvs, annualSavings, threeYrSavings,
+      monthlySavings: annualSavings/12, dailySavings: annualSavings/days,
+      payback, users, days,
+      compBarW: `${Math.round(comp.threeYr/max*100)}%`,
+      gvsBarW: `${Math.round(gvs.threeYr/max*100)}%`
+    }});
+  }
+
+  updateItem(side, idx, field, val){
+    const key = side==='comp' ? 'competitorItems' : 'gvsItems';
+    const arr = this.state[key].map((it,i)=> i===idx ? {...it, [field]:val} : it);
+    this.setState({ [key]:arr }, ()=>this.computeRoi());
+  }
+  addItem(side){
+    const key = side==='comp' ? 'competitorItems' : 'gvsItems';
+    this.setState({ [key]:[...this.state[key], { item:'', qty:'1', unitPrice:'0', lifeValue:'12', lifeUnit:'months' }] }, ()=>this.computeRoi());
+  }
+  removeItem(side, idx){
+    const key = side==='comp' ? 'competitorItems' : 'gvsItems';
+    this.setState({ [key]:this.state[key].filter((_,i)=>i!==idx) }, ()=>this.computeRoi());
+  }
+
+  navStyle(active){
+    const base='display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:9px;font-size:13.5px;cursor:pointer;white-space:nowrap;flex:none;';
+    return active ? base+'background:rgba(0,159,227,.15);border:1px solid rgba(0,159,227,.4);color:#fff;font-weight:600;'
+                  : base+'background:transparent;border:1px solid transparent;color:#8ea0b0;font-weight:500;';
+  }
+  srcStyle(active){
+    const base='flex:1;padding:11px 0;border-radius:9px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:\'IBM Plex Mono\',monospace;';
+    return active ? base+'background:#009FE3;border:1px solid #009FE3;color:#06121b;'
+                  : base+'background:#0c1722;border:1px solid #2a3a4a;color:#8ea0b0;';
+  }
+  boxStyle(color){
+    return `border:1px solid ${color}66;border-radius:11px;padding:13px;background:${color}14;color:${color}`;
+  }
+
+  rowVals(side, items){
+    return items.map((it,i)=>({
+      item:it.item, qty:it.qty, unitPrice:it.unitPrice, lifeValue:it.lifeValue, lifeUnit:it.lifeUnit,
+      onItem:e=>this.updateItem(side,i,'item',e.target.value),
+      onQty:e=>this.updateItem(side,i,'qty',e.target.value),
+      onPrice:e=>this.updateItem(side,i,'unitPrice',e.target.value),
+      onLife:e=>this.updateItem(side,i,'lifeValue',e.target.value),
+      onUnit:e=>this.updateItem(side,i,'lifeUnit',e.target.value),
+      onRemove:()=>this.removeItem(side,i)
+    }));
+  }
+
+  renderVals(){
+    const s=this.state;
+    const _bp = s.vw<720?'m':s.vw<1024?'t':'d'; const _m=_bp==='m', _t=_bp==='t';
+    const isAdmin = !!(s.currentUser && s.currentUser.role==='admin');
+    const scr = (s.screen==='insights' && !isAdmin) ? 'home' : s.screen;
+    const R = {
+      shellGrid: _m ? 'display:flex;flex-direction:column;min-height:100vh'
+                    : 'display:grid;grid-template-columns:'+(_t?'184px':'212px')+' 1fr;min-height:100vh',
+      asideStyle: _m ? 'background:#0a131c;border-bottom:1px solid #1c2a38;padding:10px 12px;display:flex;flex-direction:row;align-items:center;gap:10px;overflow-x:auto;position:sticky;top:0;z-index:10'
+                     : 'background:#0a131c;border-right:1px solid #1c2a38;padding:'+(_t?'20px 12px':'22px 16px')+';display:flex;flex-direction:column;position:sticky;top:0;height:100vh',
+      logoBoxStyle: _m ? 'background:#fff;border-radius:9px;padding:6px 10px;display:flex;align-items:center;justify-content:center;flex:none'
+                       : 'background:#fff;border-radius:11px;padding:12px 14px;margin-bottom:26px;display:flex;align-items:center;justify-content:center',
+      modulesLabelStyle: _m ? 'display:none'
+                            : "font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1.5px;color:#5a6b7b;text-transform:uppercase;margin:0 6px 12px",
+      navWrapStyle: _m ? 'display:flex;flex-direction:row;gap:6px' : 'display:flex;flex-direction:column;gap:5px',
+      bottomBlockStyle: _m ? 'display:none' : 'margin-top:auto',
+      mainStyle: 'padding:'+(_m?'18px':'30px')+';max-width:1080px',
+      homeCardsCols: _m?'1fr':(_t?'1fr 1fr':'repeat(3,1fr)'),
+      homeStatsCols: _m?'repeat(2,1fr)':'repeat(4,1fr)',
+      safeQueryCols: _m?'1fr':'1fr 1fr 1fr',
+      safeBoxCols: _m?'1fr 1fr':'repeat(4,1fr)',
+      safeEquipCols: _m?'1.2fr .5fr 1.5fr .9fr':'1.5fr .6fr 1.6fr 1fr',
+      equivTopCols: _m?'1fr':'1fr auto 1fr',
+      equivInputCols: _m?'1fr':'1fr 1.4fr',
+      equivInfoCols: _m?'1fr':'repeat(3,1fr)',
+      roiAssumpCols: _m?'1fr 1fr':'1.3fr 1.3fr .8fr .8fr',
+      roiSidesCols: (_m||_t)?'1fr':'1fr 1fr',
+      roiRowGrid: '1.9fr .42fr .72fr .56fr .54fr auto',
+      roiResCols: _m?'1fr':'repeat(3,1fr)',
+      roiSaveCols: _m?'repeat(2,1fr)':'repeat(4,1fr)'
+    };
+    const crumbMap={ home:'Home', safeselect:'SafeSelect', equivalence:'Equivalence', roi:'ROI', insights:'Insights' };
+    const sr=s.safeRes||{}; const er=s.equivRes||{}; const rr=s.roiRes||{};
+    const comp=rr.comp||{}; const gvs=rr.gvs||{};
+    const savingsPositive=(rr.threeYrSavings||0)>=0;
+
+    const logs=s.logs||{chem:{},equiv:{},roi:[]};
+    const chemEntries=Object.entries(logs.chem||{}).sort((a,b)=>b[1]-a[1]).slice(0,12);
+    const chemMax=chemEntries.length?chemEntries[0][1]:1;
+    const chemTop=chemEntries.map((e,i)=>({rank:String(i+1).padStart(2,'0'),name:e[0],count:String(e[1]),barW:Math.max(6,Math.round(e[1]/chemMax*100))+'%'}));
+    const equivEntries=Object.entries(logs.equiv||{}).sort((a,b)=>b[1]-a[1]).slice(0,12);
+    const equivMax=equivEntries.length?equivEntries[0][1]:1;
+    const equivTop=equivEntries.map((e,i)=>({rank:String(i+1).padStart(2,'0'),name:e[0],count:String(e[1]),barW:Math.max(6,Math.round(e[1]/equivMax*100))+'%'}));
+    const roiList=(logs.roi||[]).map(e=>({
+      client:e.client||'—', project:e.project||'—',
+      dateStr:(()=>{ try{ return new Date(e.date).toLocaleDateString('pt-BR'); }catch(x){ return '—'; } })(),
+      savingsStr:this.brl(e.threeYrSavings), savingsColor:(e.threeYrSavings>=0)?'#22c55e':'#fb7185',
+      paybackStr:(e.payback===null||e.payback===undefined)?'—':(e.payback<=0?'Imediato':Math.round(e.payback)+' meses'),
+      onOpen:()=>this.openReport(e,'insights')
+    }));
+    const totalConsults=Object.values(logs.chem||{}).reduce((a,b)=>a+b,0)+Object.values(logs.equiv||{}).reduce((a,b)=>a+b,0);
+
+    const rd=s.reportData||{};
+    const rUsers=Number(rd.users)||1, rDays=Number(rd.days)||250;
+    const rCompRows=(rd.competitorItems||[]).map(it=>({ item:it.item||'—', qty:String(it.qty||0), costStr:this.brl(this.itemCost3yr(it,rUsers,rDays)) }));
+    const rGvsRows=(rd.gvsItems||[]).map(it=>({ item:it.item||'—', qty:String(it.qty||0), costStr:this.brl(this.itemCost3yr(it,rUsers,rDays)) }));
+    const rMax=Math.max(rd.compTotal||0, rd.gvsTotal||0, 1);
+
+    return {
+      ...R,
+      // auth
+      isAuth:s.screen==='auth', isReport:s.screen==='roiReport',
+      authTitle: s.authMode==='login'?'Acesse sua conta':'Crie sua conta',
+      authCta: s.authMode==='login'?'Entrar na plataforma':'Criar conta e entrar',
+      isSignup:s.authMode==='signup',
+      tabLoginStyle:this.tabStyle(s.authMode==='login'), tabSignupStyle:this.tabStyle(s.authMode==='signup'),
+      setLogin:()=>this.setState({authMode:'login',authError:''}), setSignup:()=>this.setState({authMode:'signup',authError:''}),
+      authName:s.authName, authCompany:s.authCompany, authEmail:s.authEmail, authPassword:s.authPassword, authError:s.authError,
+      onAuthName:e=>this.setState({authName:e.target.value}),
+      onAuthCompany:e=>this.setState({authCompany:e.target.value}),
+      onAuthEmail:e=>this.setState({authEmail:e.target.value}),
+      onAuthPassword:e=>this.setState({authPassword:e.target.value}),
+      submitAuth:()=>this.submitAuth(),
+      authConsent:s.authConsent, onAuthConsent:e=>this.setState({authConsent:e.target.checked}),
+      showPrivacy:s.showPrivacy, togglePrivacy:()=>this.setState({showPrivacy:!s.showPrivacy}),
+      isAdmin, showInsights:isAdmin,
+      showGoogle:this.cloud, loginGoogle:()=>this.loginGoogle(),
+      exportPdf:()=>this.exportPdf(), exportData:()=>this.exportData(), clearLogs:()=>this.clearLogs(),
+      pdfLabel:s.pdfBusy?'Gerando PDF…':'Baixar PDF',
+      userName:(s.currentUser&&s.currentUser.name)||'', userInitial:(((s.currentUser&&s.currentUser.name)||'?').trim().charAt(0)||'?').toUpperCase(),
+      logout:()=>this.logout(),
+      goInsights:()=>this.go('insights'), navInsights:this.navStyle(s.screen==='insights'),
+      // insights
+      isInsights:scr==='insights',
+      insStatCols:_m?'repeat(2,1fr)':'repeat(4,1fr)', insColsTwo:_m?'1fr':'1fr 1fr',
+      roiLogCols:_m?'1.1fr 1fr .85fr 1fr .8fr auto':'1.3fr 1.4fr .9fr 1fr .9fr auto',
+      insTotal:String(totalConsults), insChemDistinct:String(Object.keys(logs.chem||{}).length),
+      insEquivDistinct:String(Object.keys(logs.equiv||{}).length), insRoiCount:String((logs.roi||[]).length),
+      chemTop, equivTop, roiLog:roiList,
+      hasChemLog:chemTop.length>0, noChemLog:chemTop.length===0,
+      hasEquivLog:equivTop.length>0, noEquivLog:equivTop.length===0,
+      hasRoiLog:roiList.length>0, noRoiLog:roiList.length===0,
+      // report
+      reportId:String(rd.id||'—').slice(-6), reportDate:(()=>{ try{ return new Date(rd.date||Date.now()).toLocaleDateString('pt-BR'); }catch(x){ return ''; } })(),
+      reportClient:rd.client||'—', reportProject:rd.project||'—', reportUser:rd.user||'—',
+      reportUsers:String(rd.users||'—'), reportDays:String(rd.days||'—'),
+      reportCompTotal:this.brl(rd.compTotal), reportGvsTotal:this.brl(rd.gvsTotal),
+      reportSavings3y:this.brl(rd.threeYrSavings), reportSavingsYear:this.brl(rd.annualSavings),
+      reportSavingsMonth:this.brl(rd.monthlySavings), reportSavingsDay:this.brl(rd.dailySavings),
+      reportPayback:(rd.payback===null||rd.payback===undefined)?'—':(rd.payback<=0?'Imediato':Math.round(rd.payback)+' meses'),
+      reportCompBarW:Math.round((rd.compTotal||0)/rMax*100)+'%', reportGvsBarW:Math.round((rd.gvsTotal||0)/rMax*100)+'%',
+      reportCompRows:rCompRows, reportGvsRows:rGvsRows,
+      generateReport:()=>this.generateReport(), printReport:()=>this.printReport(), closeReport:()=>this.closeReport(),
+      saveRoi:()=>this.saveRoiLog(), roiCtaCols:_m?'1fr':'1fr 1.6fr',
+      isLanguage:s.screen==='language',
+      isApp:['home','safeselect','equivalence','roi','insights'].indexOf(scr)>=0,
+      isHome:scr==='home', isSafe:scr==='safeselect', isEquiv:scr==='equivalence', isRoi:scr==='roi',
+      crumb:crumbMap[scr]||'Home',
+      chemCount:(this.CHEM||[]).length, equivCount:7,
+      chemNames:(this.CHEM||[]).slice(0,500).map(c=>c.nome), productNames:this.EQUIV.map(e=>e.prod),
+
+      setPt:()=>this.go('home'), setEn:()=>this.go('home'), setEs:()=>this.go('home'),
+      goHome:()=>this.go('home'), goSafe:()=>this.go('safeselect'), goEquiv:()=>this.go('equivalence'), goRoi:()=>this.go('roi'),
+      navHome:this.navStyle(s.screen==='home'), navSafe:this.navStyle(s.screen==='safeselect'),
+      navEquiv:this.navStyle(s.screen==='equivalence'), navRoi:this.navStyle(s.screen==='roi'),
+
+      // safeselect
+      safeQuery:s.safeQuery, safeConc:s.safeConc, safeUnit:s.safeUnit, safeO2:s.safeO2,
+      onSafeQuery:e=>this.setState({safeQuery:e.target.value}),
+      onSafeConc:e=>this.setState({safeConc:e.target.value}),
+      onSafeUnit:e=>this.setState({safeUnit:e.target.value}),
+      onSafeO2:e=>this.setState({safeO2:e.target.value}),
+      setSrcNr15:()=>this.setState({safeSource:'NR15'},()=>this.computeSafe()), setSrcAcgih:()=>this.setState({safeSource:'ACGIH'},()=>this.computeSafe()),
+      srcNr15Style:this.srcStyle(s.safeSource==='NR15'), srcAcgihStyle:this.srcStyle(s.safeSource==='ACGIH'),
+      calcSafe:()=>this.computeSafe(true),
+      safeShown:!!s.safeRes, safeError:s.safeError,
+      safeName:sr.name, safeSub:sr.sub, safeBadge:sr.badge,
+      safeBadgeStyle: sr.badgeColor?`background:${sr.badgeColor}26;color:${sr.badgeColor};border:1px solid ${sr.badgeColor}66;font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;letter-spacing:.5px;padding:8px 13px;border-radius:8px;white-space:nowrap`:'',
+      safeFallback:sr.fallbackMsg, safeFormula:sr.formula,
+      safeConcStr:sr.concStr, safeLimitLabel:sr.limitLabel, safeLimitStr:sr.limitStr,
+      safeApfStr:sr.apfStr, safeApfBoxStyle: this.boxStyle(sr.apfColor||'#22c55e'),
+      safeIdlhStr:sr.idlhStr, safeIdlhBoxStyle: this.boxStyle(sr.idlhSubColor||'#22c55e'),
+      safeFilter:sr.filter, safeTech:sr.tech, safeAllLimits:sr.allLimits,
+      safeStel:sr.stel||'', safeTeto:sr.teto||'', safeIrr:sr.irr||'',
+      safeHasExtras:!!(sr.stel||sr.teto||sr.irr),
+      safeO2Warn:sr.o2Warn, safeOptions:sr.options||[], safeNote:sr.note,
+
+      // equivalence
+      equivCompetitor:s.equivCompetitor, equivProduct:s.equivProduct,
+      competitorList:['3M','Honeywell','MSA','Dräger','Bullard','Clemco','RPB'],
+      onEquivCompetitor:e=>this.setState({equivCompetitor:e.target.value}),
+      onEquivProduct:e=>this.setState({equivProduct:e.target.value}),
+      calcEquiv:()=>this.computeEquiv(true),
+      equivShown:!!s.equivRes, equivError:s.equivError,
+      eqCompName:er.compName, eqCategory:er.category, eqGvsEquiv:er.gvsEquiv, eqGvsTech:er.gvsTech,
+      eqFamily:er.family, eqFilter:er.filter, eqPriority:er.priority, eqAngle:er.angle, eqNotes:er.notes,
+      eqHasMore:!!(er.others&&er.others.length), eqOthers:er.others||[],
+
+      // roi
+      roiClient:s.roiClient, roiProject:s.roiProject, roiUsers:s.roiUsers, roiDays:s.roiDays,
+      onRoiClient:e=>this.setState({roiClient:e.target.value}),
+      onRoiProject:e=>this.setState({roiProject:e.target.value}),
+      onRoiUsers:e=>this.setState({roiUsers:e.target.value},()=>this.computeRoi()),
+      onRoiDays:e=>this.setState({roiDays:e.target.value},()=>this.computeRoi()),
+      compRows:this.rowVals('comp', s.competitorItems), gvsRows:this.rowVals('gvs', s.gvsItems),
+      addComp:()=>this.addItem('comp'), addGvs:()=>this.addItem('gvs'),
+      calcRoi:()=>this.computeRoi(),
+      roiShown:!!s.roiRes,
+      compTotalStr:this.brl(comp.threeYr), gvsTotalStr:this.brl(gvs.threeYr),
+      savings3yStr:this.brl(rr.threeYrSavings), savingsYearStr:this.brl(rr.annualSavings),
+      savingsMonthStr:this.brl(rr.monthlySavings), savingsDayStr:this.brl(rr.dailySavings),
+      savingsBoxStyle:this.boxStyle(savingsPositive?'#22c55e':'#fb7185'),
+      paybackStr: rr.payback===null||rr.payback===undefined ? '—' : (rr.payback<=0 ? 'Imediato' : `${Math.round(rr.payback)} meses`),
+      compBarW:rr.compBarW||'100%', gvsBarW:rr.gvsBarW||'80%',
+      roiVerdict: savingsPositive
+        ? `Com ${rr.users||0} usuários e ${rr.days||0} dias/ano, a solução GVS/RPB gera economia de ${this.brl(rr.annualSavings)}/ano (${this.brl(rr.threeYrSavings)} em 3 anos). Posicione por menor custo total de propriedade e payback do investimento.`
+        : `Nesta configuração o TCO da GVS/RPB ficou acima do concorrente. Reavalie preços, vida útil dos filtros e consumo — o diferencial costuma vir da maior durabilidade e menor troca de consumíveis.`
+    };
+  }
+}
+</script>
+</body>
+</html>
