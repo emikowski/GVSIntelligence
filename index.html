@@ -784,7 +784,7 @@ class Component extends DCLogic {
   };
 
   componentDidMount() {
-    this.CHEM = (window.GVS_CHEM && window.GVS_CHEM.chem) || [];
+    this.loadChem();
     let user=null, logs={chem:{},equiv:{},roi:[]};
     try { user = JSON.parse(localStorage.getItem('gvs_current_user')||'null'); } catch(e){}
     try { const lg = JSON.parse(localStorage.getItem('gvs_logs')); if(lg) logs = lg; } catch(e){}
@@ -840,6 +840,14 @@ class Component extends DCLogic {
     if(this.cloud){ this.ensureSb().then(sb=>{ try{ if(sb) sb.auth.signOut(); }catch(e){} }); }
     try { localStorage.removeItem('gvs_current_user'); } catch(e){}
     this.setState({ currentUser:null, screen:'auth', authMode:'login', authPassword:'', authError:'' });
+  }
+
+  loadChem(tries){
+    tries = tries||0;
+    if(window.GVS_CHEM && window.GVS_CHEM.chem && window.GVS_CHEM.chem.length){
+      this.CHEM = window.GVS_CHEM.chem; this.forceUpdate(); return;
+    }
+    if(tries < 80){ setTimeout(()=>this.loadChem(tries+1), 100); }
   }
 
   // ---------- USAGE LOG ----------
